@@ -1,0 +1,2338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lopes Consultoria de Imóveis — Sistema de Gestão</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#F1F3F7;color:#111827;min-height:100vh}
+input,select,button,textarea{font-family:inherit}
+
+/* ── LOGIN ── */
+#screen-login{display:none;min-height:100vh;position:fixed;inset:0;z-index:9000;flex-direction:row;background:#0E0E1E}
+#screen-login.active{display:flex}
+.login-bg-glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 55% 70% at 18% 55%,rgba(200,16,46,.22) 0%,transparent 55%),radial-gradient(ellipse 50% 60% at 82% 25%,rgba(26,26,46,.7) 0%,transparent 60%)}
+.login-dots{position:absolute;top:50%;right:440px;transform:translateY(-50%);width:220px;height:220px;opacity:.055;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:20px 20px;pointer-events:none}
+.login-left{flex:1;display:flex;flex-direction:column;justify-content:center;padding:56px 80px;position:relative;z-index:1;gap:36px}
+.ll-logo-box{width:54px;height:54px;background:#C8102E;border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:26px;box-shadow:0 8px 24px rgba(200,16,46,.45)}
+.ll-brand h1{font-size:28px;font-weight:900;color:#fff;margin:8px 0 2px}
+.ll-brand p{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:2.5px;text-transform:uppercase}
+.ll-tagline h2{font-size:38px;font-weight:900;color:#fff;line-height:1.2}
+.ll-tagline h2 span{color:#C8102E}
+.ll-tagline p{font-size:14px;color:rgba(255,255,255,.42);margin-top:12px;line-height:1.65}
+.ll-stats{display:flex;gap:36px}
+.ll-stat .val{font-size:26px;font-weight:900;color:#C8102E}
+.ll-stat .lbl{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.login-right{width:460px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:40px;background:rgba(255,255,255,.035);backdrop-filter:blur(18px);border-left:1px solid rgba(255,255,255,.065);position:relative;z-index:1}
+.lf-wrap{width:100%;max-width:360px}
+.lf-title{font-size:23px;font-weight:800;color:#fff;margin-bottom:4px}
+.lf-sub{font-size:13px;color:rgba(255,255,255,.38);margin-bottom:28px}
+.lf-error{background:rgba(200,16,46,.15);border:1px solid rgba(200,16,46,.4);border-radius:8px;padding:10px 14px;font-size:13px;color:#FCA5A5;margin-bottom:16px;display:none}
+.lf-field{margin-bottom:18px}
+.lf-field label{display:block;font-size:11px;font-weight:700;color:rgba(255,255,255,.45);margin-bottom:6px;letter-spacing:.8px;text-transform:uppercase}
+.lf-field input{width:100%;padding:13px 16px;border-radius:10px;border:1.5px solid rgba(255,255,255,.11);background:rgba(255,255,255,.07);color:#fff;font-size:14px;outline:none;transition:all .2s}
+.lf-field input::placeholder{color:rgba(255,255,255,.22)}
+.lf-field input:focus{border-color:#C8102E;background:rgba(255,255,255,.1)}
+.lf-submit{width:100%;padding:14px;border-radius:10px;border:none;background:#C8102E;color:#fff;font-weight:800;font-size:15px;cursor:pointer;letter-spacing:.3px;box-shadow:0 6px 20px rgba(200,16,46,.42);transition:all .2s}
+.lf-submit:hover{background:#a80d25;transform:translateY(-1px)}
+.lf-hint{margin-top:20px;padding:14px;background:rgba(255,255,255,.035);border-radius:10px;border:1px solid rgba(255,255,255,.065)}
+.lf-hint-ttl{font-size:10px;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.lf-hint-row{display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.42);padding:3px 0}
+.lf-hint-row b{color:rgba(255,255,255,.7);font-weight:700}
+
+/* ── SELECT EMP ── */
+#screen-select{display:none;min-height:100vh;flex-direction:column;background:#F1F3F7;position:fixed;inset:0;z-index:8000;overflow-y:auto}
+#screen-select.active{display:flex}
+.sel-header{background:#1A1A2E;border-bottom:3px solid #C8102E;padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(0,0,0,.25);flex-shrink:0}
+.sel-body{flex:1;max-width:1200px;margin:0 auto;padding:48px 24px;width:100%}
+.sel-hero{text-align:center;margin-bottom:40px}
+.sel-role-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(200,16,46,.1);border:1px solid rgba(200,16,46,.25);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;color:#C8102E;text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px}
+.sel-hero h2{font-size:28px;font-weight:900;color:#1A1A2E}
+.sel-hero p{font-size:14px;color:#6B7280;margin-top:6px}
+.emp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.emp-card{background:#fff;border-radius:14px;border:2px solid #E5E7EB;padding:24px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.04);position:relative;overflow:hidden}
+.emp-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#C8102E;transform:scaleX(0);transition:transform .22s;transform-origin:left}
+.emp-card:hover{border-color:#C8102E;transform:translateY(-3px);box-shadow:0 8px 24px rgba(200,16,46,.15)}
+.emp-card:hover::before{transform:scaleX(1)}
+.emp-card .ec-div{font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.emp-card .ec-nome{font-size:17px;font-weight:800;color:#1A1A2E;margin-bottom:5px}
+.emp-card .ec-inc{font-size:12px;color:#6B7280}
+.emp-card .ec-arr{position:absolute;bottom:18px;right:18px;width:28px;height:28px;border-radius:50%;background:rgba(200,16,46,.08);color:#C8102E;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s}
+.emp-card:hover .ec-arr{background:#C8102E;color:#fff}
+
+/* ── SYSTEM ── */
+#screen-system{display:none;flex-direction:column}
+#topbar{position:sticky;top:0;z-index:100;background:#1A1A2E;border-bottom:3px solid #C8102E;height:62px;display:flex;align-items:center;gap:16px;padding:0 24px;box-shadow:0 4px 20px rgba(0,0,0,.25)}
+.logo-box{width:36px;height:36px;background:#C8102E;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:18px;flex-shrink:0}
+.logo-text strong{font-size:15px;color:#fff;line-height:1.1;display:block}
+.logo-text span{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:1.5px;text-transform:uppercase}
+.topbar-divider{width:1px;height:32px;background:rgba(255,255,255,.1);flex-shrink:0}
+nav{display:flex;gap:4px;flex:1}
+.nav-btn{padding:7px 16px;border-radius:8px;border:none;background:transparent;color:rgba(255,255,255,.55);font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.nav-btn.active{background:#C8102E;color:#fff}
+.topbar-right{display:flex;gap:10px;align-items:center;flex-shrink:0}
+.emp-tag{background:rgba(200,16,46,.15);border:1px solid rgba(200,16,46,.3);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;color:#FCA5A5;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-pill{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:5px 12px 5px 5px;cursor:pointer;transition:background .2s}
+.user-pill:hover{background:rgba(255,255,255,.1)}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:#C8102E;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
+.u-name{font-size:12px;font-weight:600;color:rgba(255,255,255,.8)}
+.u-role{font-size:10px;color:rgba(255,255,255,.35)}
+.logout-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 10px;color:rgba(255,255,255,.5);cursor:pointer;font-size:12px;transition:all .2s}
+.logout-btn:hover{background:rgba(200,16,46,.2);color:#FCA5A5;border-color:rgba(200,16,46,.3)}
+
+/* ── PAGES ── */
+#app-content{max-width:1560px;margin:0 auto;padding:24px 20px}
+.page{display:none;flex-direction:column;gap:20px}
+.page.active{display:flex}
+
+/* ── ESTEIRA ── */
+.esteira-wrap{background:#fff;border-radius:12px;border:1px solid #E5E7EB;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden}
+.esteira-toolbar{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;flex-wrap:wrap}
+.esteira-toolbar .tb-title{font-size:13px;font-weight:700;color:#1A1A2E;flex:1}
+.esteira-scroll{overflow-x:auto}
+.esteira-table{border-collapse:collapse;width:100%;min-width:1200px;font-size:12px}
+.esteira-table thead tr{background:#1A1A2E}
+.esteira-table thead th{padding:10px 8px;text-align:left;font-size:10px;font-weight:700;color:rgba(255,255,255,.65);letter-spacing:.7px;text-transform:uppercase;white-space:nowrap;position:relative}
+.esteira-table thead th.drag-over{background:#C8102E!important}
+.esteira-table tbody tr{border-bottom:1px solid #F3F4F6;transition:background .15s}
+.esteira-table tbody tr:hover{background:#FFF8F8}
+.esteira-table tbody tr.row-parado{background:#FFFBEB}
+.esteira-table tbody tr.row-pronto{background:#F0FDF4}
+.esteira-table tbody td{padding:7px 8px;vertical-align:middle;min-width:80px}
+/* inline editable cells */
+.cell-edit{border:none;background:transparent;font-size:12px;color:#374151;width:100%;outline:none;padding:2px 4px;border-radius:4px;min-width:60px}
+.cell-edit:hover,.cell-edit:focus{background:#F3F4F6;border:1px solid #D1D5DB;padding:1px 3px}
+.cell-select{border:none;background:transparent;font-size:12px;color:#374151;cursor:pointer;padding:2px 4px;border-radius:4px;outline:none;width:100%}
+.cell-select:hover,.cell-select:focus{background:#F3F4F6;border:1px solid #D1D5DB;padding:1px 3px}
+.status-pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;border:1px solid currentColor}
+.row-num{font-size:11px;color:#9CA3AF;font-weight:700;text-align:center;min-width:28px}
+.col-actions button{padding:3px 8px;border-radius:5px;border:1.5px solid #C8102E;background:transparent;color:#C8102E;font-weight:700;font-size:11px;cursor:pointer}
+.add-row-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;background:#fff;border:none;border-top:1px solid #E5E7EB;color:#C8102E;font-weight:700;font-size:13px;cursor:pointer;width:100%;transition:background .15s}
+.add-row-btn:hover{background:#FFF1F2}
+/* col resizer */
+.col-resize{position:absolute;right:0;top:0;bottom:0;width:5px;cursor:col-resize;background:transparent}
+.col-resize:hover{background:rgba(200,16,46,.3)}
+
+/* ── KPI CARDS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.kpi-card{border-radius:12px;border:1.5px solid;padding:14px 16px;display:flex;flex-direction:column;gap:8px;position:relative}
+.kpi-card .kc-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;opacity:.7}
+.kpi-card .kc-num{font-size:28px;font-weight:900;line-height:1}
+.kpi-card .kc-sub{font-size:11px;opacity:.6}
+.kpi-alerta::before{content:'';position:absolute;top:-2px;left:-2px;right:-2px;bottom:-2px;border-radius:14px;border:2px solid #FCD34D;pointer-events:none;animation:pulse-warn 2s infinite}
+@keyframes pulse-warn{0%,100%{opacity:1}50%{opacity:.55}}
+
+/* ── ESTEIRA CONFIG ── */
+.step-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #F3F4F6}
+.step-row:last-child{border-bottom:none}
+.step-drag{cursor:grab;color:#D1D5DB;font-size:16px;flex-shrink:0}
+.step-color{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.step-name{flex:1;font-size:13px;font-weight:600;color:#374151}
+.step-type{font-size:11px;color:#9CA3AF;background:#F3F4F6;border-radius:4px;padding:2px 6px}
+
+/* ── GENERIC ── */
+.card{background:#fff;border-radius:12px;border:1px solid #E5E7EB;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:20px}
+.btn-primary{padding:9px 20px;border-radius:8px;border:none;background:#C8102E;color:#fff;font-weight:700;cursor:pointer;font-size:13px;box-shadow:0 4px 12px rgba(200,16,46,.3);transition:opacity .2s}
+.btn-primary:hover{opacity:.9}
+.btn-secondary{padding:9px 20px;border-radius:8px;border:1.5px solid #D1D5DB;background:#fff;color:#374151;font-weight:600;cursor:pointer;font-size:13px}
+.btn-sm{padding:5px 12px;border-radius:6px;border:1.5px solid #C8102E;background:transparent;color:#C8102E;font-weight:700;font-size:11px;cursor:pointer}
+.btn-sm-gray{padding:5px 12px;border-radius:6px;border:1.5px solid #D1D5DB;background:transparent;color:#6B7280;font-weight:700;font-size:11px;cursor:pointer}
+.btn-sm-danger{padding:5px 12px;border-radius:6px;border:1.5px solid #EF4444;background:transparent;color:#EF4444;font-weight:700;font-size:11px;cursor:pointer}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:12px;font-weight:600;color:#374151}
+.form-group label .req{color:#C8102E}
+.form-group input,.form-group select{border:1.5px solid #D1D5DB;border-radius:8px;padding:9px 12px;font-size:14px;color:#111827;background:#F9FAFB;outline:none;transition:border .2s}
+.form-group input:focus,.form-group select:focus{border-color:#C8102E}
+table{width:100%;border-collapse:collapse}
+thead tr{background:#1A1A2E}
+thead th{padding:11px 14px;text-align:left;font-size:10px;font-weight:700;color:rgba(255,255,255,.65);letter-spacing:.8px;text-transform:uppercase;white-space:nowrap}
+tbody tr{border-bottom:1px solid #F3F4F6}
+tbody tr:nth-child(even){background:#FAFAFA}
+tbody td{padding:11px 14px;font-size:13px;color:#374151;vertical-align:middle}
+.badge{display:inline-block;padding:2px 9px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;border:1px solid}
+.modal-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(26,26,46,.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal-box{background:#fff;border-radius:16px;width:100%;max-width:720px;max-height:92vh;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.2);display:flex;flex-direction:column}
+.modal-box.wide{max-width:960px}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;background:#1A1A2E;border-bottom:1px solid #E5E7EB}
+.modal-header h2{font-size:17px;font-weight:800;color:#fff}
+.modal-close{background:rgba(255,255,255,.12);border:none;color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center}
+.modal-body{padding:24px;overflow-y:auto;flex:1}
+.sec-title{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.sec-title .accent{width:3px;height:18px;background:#C8102E;border-radius:2px;flex-shrink:0}
+.sec-title h3{font-size:14px;font-weight:700;color:#1A1A2E}
+.bar-track{height:7px;background:#E5E7EB;border-radius:20px;overflow:hidden;flex:1}
+.bar-fill{height:100%;border-radius:20px;transition:width .6s ease}
+.therm-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.therm-footer{display:flex;justify-content:space-between;font-size:11px;color:#6B7280}
+.therm-footer strong{color:#1A1A2E}
+.prod-therm-card{background:#fff;border-radius:10px;border:1px solid #E5E7EB;padding:14px 18px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.prod-therm-card .nome{font-size:11px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.3px;margin-bottom:9px}
+/* role tags */
+.role-tag{display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase}
+.rt-admin{background:rgba(139,92,246,.18);color:#A78BFA;border:1px solid rgba(139,92,246,.28)}
+.rt-gestor{background:rgba(6,182,212,.14);color:#67E8F9;border:1px solid rgba(6,182,212,.24)}
+.rt-juridico{background:rgba(245,158,11,.14);color:#FCD34D;border:1px solid rgba(245,158,11,.24)}
+.rt-comercial{background:rgba(16,185,129,.14);color:#6EE7B7;border:1px solid rgba(16,185,129,.24)}
+/* gauge */
+.gauge-wrap{text-align:center;padding:20px 0 6px}
+.gauge-center{position:relative;display:inline-block;width:190px}
+.gauge-inner{position:absolute;bottom:0;left:0;right:0;display:flex;flex-direction:column;align-items:center}
+.gauge-pct{font-size:30px;font-weight:900;color:#1A1A2E;line-height:1}
+/* ranking */
+.ranking-card{background:#fff;border-radius:12px;border:1px solid #E5E7EB;overflow:hidden}
+.ranking-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #F3F4F6}
+.ranking-title{font-size:11px;font-weight:800;color:#6B7280;letter-spacing:1px;text-transform:uppercase}
+.rank-toggle{padding:3px 9px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;border:none;background:transparent;color:#6B7280}
+.rank-toggle.active{background:#C8102E;color:#fff}
+.ranking-row{display:grid;grid-template-columns:24px 1fr 56px 90px;padding:10px 16px;border-bottom:1px solid #F9FAFB;align-items:center;font-size:12px}
+.ranking-row:last-child{border-bottom:none}
+/* pvr */
+.pvr-bar-wrap{height:12px;background:#F3F4F6;border-radius:20px;overflow:hidden;position:relative;margin-bottom:3px}
+.pvr-bar-and{position:absolute;left:0;top:0;bottom:0;border-radius:20px}
+.pvr-bar-real{position:absolute;left:0;top:0;bottom:0;border-radius:20px}
+/* search */
+.search-box{display:flex;align-items:center;gap:8px;border:1.5px solid #E5E7EB;border-radius:8px;padding:8px 12px;background:#fff;flex:1;min-width:200px}
+.search-box input{border:none;outline:none;font-size:13px;color:#374151;background:transparent;width:100%}
+/* switch emp button */
+.switch-emp-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:1.5px solid rgba(200,16,46,.35);background:rgba(200,16,46,.07);color:#C8102E;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+.switch-emp-btn:hover{background:rgba(200,16,46,.14);border-color:#C8102E}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#F1F3F7}
+::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:10px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .3s ease both}
+@media(max-width:900px){
+  .login-left{display:none}
+  .login-right{width:100%}
+  .grid-3{grid-template-columns:1fr 1fr}
+  .grid-4{grid-template-columns:1fr 1fr}
+  #topbar{padding:0 12px;gap:8px}
+  #app-content{padding:14px 10px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════ LOGIN ══════ -->
+<div id="screen-login" class="active">
+  <div class="login-bg-glow"></div>
+  <div class="login-dots"></div>
+  <div class="login-left">
+    <div class="ll-brand">
+      <div class="ll-logo-box">L</div>
+      <h1>LOPES</h1>
+      <p>Consultoria de Imóveis</p>
+    </div>
+    <div class="ll-tagline">
+      <h2>Gestão de<br><span>Fluxo Jurídico</span><br>e Performance</h2>
+      <p>Plataforma integrada para controle de processos,<br>fluxo jurídico e análise de vendas em lançamentos.</p>
+    </div>
+    <div class="ll-stats">
+      <div class="ll-stat"><div class="val" id="ls-proc">—</div><div class="lbl">Processos</div></div>
+      <div class="ll-stat"><div class="val" id="ls-emp">—</div><div class="lbl">Empreend. Ativos</div></div>
+      <div class="ll-stat"><div class="val" id="ls-vgv">—</div><div class="lbl">VGV Total</div></div>
+    </div>
+  </div>
+  <div class="login-right">
+    <div class="lf-wrap fade-up">
+      <div class="lf-title">Bem-vindo de volta</div>
+      <div class="lf-sub">Acesse sua conta para continuar</div>
+      <div class="lf-error" id="login-error">Usuário ou senha incorretos.</div>
+      <div class="lf-field"><label>Usuário</label><input id="li-user" type="text" placeholder="Digite seu usuário" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="lf-field"><label>Senha</label><input id="li-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="lf-submit" onclick="doLogin()">Entrar no Sistema →</button>
+      <div class="lf-hint">
+        <div class="lf-hint-ttl">Credenciais de demonstração</div>
+        <div class="lf-hint-row"><b>admin</b><span>admin123 — Administrador</span></div>
+        <div class="lf-hint-row"><b>gestor</b><span>gestor123 — Gestor</span></div>
+        <div class="lf-hint-row"><b>juridico</b><span>jur123 — Jurídico</span></div>
+        <div class="lf-hint-row"><b>comercial</b><span>com123 — Comercial</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SELECT EMP ══════ -->
+<div id="screen-select">
+  <div class="sel-header">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="logo-box">L</div>
+      <div class="logo-text"><strong>LOPES</strong><span>Consultoria de Imóveis</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span id="sel-user-label" style="font-size:13px;color:rgba(255,255,255,.55);"></span>
+      <button class="logout-btn" onclick="doLogout()">↩ Sair</button>
+    </div>
+  </div>
+  <div class="sel-body">
+    <div class="sel-hero fade-up">
+      <div class="sel-role-badge" id="sel-role-badge">—</div>
+      <h2 id="sel-title">Selecione o Empreendimento</h2>
+      <p id="sel-sub">Os dados serão filtrados para o empreendimento escolhido</p>
+    </div>
+    <div class="emp-grid fade-up" id="emp-grid"></div>
+  </div>
+</div>
+
+<!-- ══════ SISTEMA ══════ -->
+<div id="screen-system">
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+      <div class="logo-box">L</div>
+      <div class="logo-text"><strong>LOPES</strong><span>Consultoria de Imóveis</span></div>
+    </div>
+    <div class="topbar-divider"></div>
+    <nav>
+      <button class="nav-btn active" id="nav-juridico" onclick="switchTab('juridico',this)">⚖️ Jurídico</button>
+      <button class="nav-btn" id="nav-performance" onclick="switchTab('performance',this)">📊 Performance</button>
+      <button class="nav-btn" id="nav-config" onclick="switchTab('config',this)">⚙️ Configurações</button>
+      <button class="nav-btn" id="nav-usuarios" onclick="switchTab('usuarios',this)">👥 Usuários</button>
+    </nav>
+    <div class="topbar-right">
+      <span id="emp-tag-tb"></span>
+      <button class="switch-emp-btn" id="switch-emp-btn" onclick="showSwitchEmpModal()" style="display:none;">🏢 Trocar Empreendimento</button>
+      <span style="font-size:11px;color:rgba(255,255,255,.3);" id="tb-data"></span>
+      <div class="user-pill" onclick="doLogout()" title="Clique para sair">
+        <div class="user-avatar" id="tb-avatar">?</div>
+        <div><div class="u-name" id="tb-uname">—</div><div class="u-role" id="tb-urole">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APP CONTENT -->
+  <div id="app-content">
+
+    <!-- ══ JURÍDICO ══ -->
+    <div id="page-juridico" class="page active">
+      <!-- header -->
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div>
+          <h1 style="font-size:20px;font-weight:800;color:#1A1A2E;" id="jur-title">Esteira Jurídica</h1>
+          <p style="font-size:12px;color:#6B7280;margin-top:2px;" id="jur-subtitle">Todos os empreendimentos ativos</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <div class="search-box" style="min-width:220px;">
+            <span style="color:#9CA3AF;">🔍</span>
+            <input id="jur-search" type="text" placeholder="Buscar PV, cliente, corretor..." oninput="renderEsteira()">
+          </div>
+          <button class="btn-primary" onclick="addProcessoRow()">+ Novo Processo</button>
+          <button class="btn-secondary" onclick="openEsteiraConfig()" style="font-size:13px;">⚙ Configurar Esteira</button>
+        </div>
+      </div>
+      <!-- KPIs -->
+      <div class="kpi-grid" id="jur-kpis"></div>
+      <!-- Esteira -->
+      <div class="esteira-wrap">
+        <div class="esteira-toolbar">
+          <span class="tb-title" id="esteira-title-bar">Esteira de Processos</span>
+          <button class="btn-sm" onclick="exportCSV()">⬇ Exportar CSV</button>
+        </div>
+        <div class="esteira-scroll">
+          <table class="esteira-table" id="esteira-table">
+            <thead id="esteira-thead"></thead>
+            <tbody id="esteira-tbody"></tbody>
+          </table>
+        </div>
+        <button class="add-row-btn" onclick="addProcessoRow()">＋ Adicionar processo</button>
+      </div>
+    </div>
+
+    <!-- ══ PERFORMANCE ══ -->
+    <div id="page-performance" class="page">
+      <div style="background:linear-gradient(135deg,#1A1A2E 0%,#2D2D4E 100%);border-radius:14px;padding:24px;color:#fff;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.45);text-transform:uppercase;margin-bottom:4px;">Painel de Performance</div>
+        <h2 style="font-size:22px;font-weight:800;margin-bottom:12px;" id="perf-title-h">Performance de Vendas</h2>
+        <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center;">
+          <span style="font-size:11px;color:rgba(255,255,255,.4);font-weight:700;text-transform:uppercase;">Filtros:</span>
+          <select id="perf-filter-emp" onchange="renderPerformance()" style="border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:6px 10px;font-size:12px;background:rgba(255,255,255,.1);color:#fff;cursor:pointer;outline:none;">
+            <option value="">Todas as empresas</option>
+            <option>Lopes SP</option><option>Lopes D</option><option>Lopes LN</option><option>Lopes ABC</option><option>LIL</option><option>Outros</option>
+          </select>
+          <select id="perf-filter-prod" onchange="renderPerformance()" style="border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:6px 10px;font-size:12px;background:rgba(255,255,255,.1);color:#fff;cursor:pointer;outline:none;">
+            <option value="">Todos os produtos</option>
+          </select>
+        </div>
+        <div class="grid-4" id="perf-hero-kpis"></div>
+      </div>
+      <div class="grid-3" id="perf-row1"></div>
+      <div id="perf-painel" style="background:#fff;border-radius:12px;border:1px solid #E5E7EB;overflow:hidden;">
+        <div style="padding:16px 20px;border-bottom:1px solid #F3F4F6;"><h2 style="font-size:16px;font-weight:800;color:#1A1A2E;">Painel de Performance de Vendas</h2></div>
+        <div style="padding:6px 20px 20px;border-bottom:1px solid #F3F4F6;" id="perf-gauge-wrap"></div>
+        <div style="padding:16px 20px;"><h3 style="font-size:14px;font-weight:800;color:#1A1A2E;margin-bottom:14px;">Rankings</h3><div class="grid-3" id="perf-rankings"></div></div>
+      </div>
+      <div class="grid-2" id="perf-row2"></div>
+      <div id="perf-pvr" style="background:#fff;border-radius:12px;border:1px solid #E5E7EB;padding:20px;"></div>
+      <div class="card" id="perf-top-vgv"></div>
+    </div>
+
+    <!-- ══ CONFIG ══ -->
+    <div id="page-config" class="page">
+      <div class="grid-4" id="config-kpis"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h2 style="font-size:18px;font-weight:800;color:#1A1A2E;">Gestão de Empreendimentos</h2>
+        <button class="btn-primary" onclick="openModal('modal-novo-produto')">+ Novo Empreendimento</button>
+      </div>
+      <div style="border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;background:#fff;">
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr>
+              <th>Empreendimento</th><th>Divisão</th><th>Incorporador</th><th>Resp.</th>
+              <th>Previsão VGV</th><th>Meta Unid.</th><th>Progresso</th><th>Esteira</th><th>Status</th><th>Ações</th>
+            </tr></thead>
+            <tbody id="config-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ USUÁRIOS ══ -->
+    <div id="page-usuarios" class="page">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h1 style="font-size:18px;font-weight:800;color:#1A1A2E;">Gestão de Usuários e Acessos</h1>
+        <button class="btn-primary" onclick="openModal('modal-novo-usuario')">+ Novo Usuário</button>
+      </div>
+      <div class="grid-4" id="user-kpis"></div>
+      <div style="border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;background:#fff;">
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Usuário</th><th>Nome</th><th>Perfil</th><th>Empresas</th><th>Último Acesso</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /app-content -->
+</div><!-- /screen-system -->
+
+<!-- ══════ MODAIS ══════ -->
+
+<!-- Modal Configurar Esteira -->
+<div class="modal-overlay" id="modal-esteira-config" onclick="overlayClose(event,'modal-esteira-config')">
+  <div class="modal-box wide">
+    <div class="modal-header">
+      <h2 id="modal-esteira-title">Configurar Esteira</h2>
+      <button class="modal-close" onclick="closeModal('modal-esteira-config')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="sec-title"><div class="accent"></div><h3>Selecionar Empreendimento</h3></div>
+      <select id="esteira-config-prod" onchange="loadEsteiraConfig(this.value)" style="width:100%;border:1.5px solid #D1D5DB;border-radius:8px;padding:9px 12px;font-size:14px;color:#111827;background:#F9FAFB;outline:none;margin-bottom:20px;">
+        <option value="">Selecione...</option>
+      </select>
+      <div id="esteira-config-body" style="display:none;">
+        <div class="sec-title"><div class="accent"></div><h3>Colunas da Esteira</h3></div>
+        <p style="font-size:12px;color:#6B7280;margin-bottom:14px;">Ative/desative e reordene as colunas. Colunas marcadas aparecem na esteira deste empreendimento.</p>
+        <div id="esteira-steps-list"></div>
+        <div style="margin-top:16px;padding:14px;background:#F9FAFB;border-radius:10px;border:1.5px dashed #D1D5DB;">
+          <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:10px;">+ Adicionar Coluna Personalizada</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <input id="new-col-name" placeholder="Nome da coluna" style="flex:1;min-width:140px;border:1.5px solid #D1D5DB;border-radius:7px;padding:7px 10px;font-size:13px;outline:none;">
+            <select id="new-col-type" style="border:1.5px solid #D1D5DB;border-radius:7px;padding:7px 10px;font-size:13px;outline:none;">
+              <option value="text">Texto livre</option>
+              <option value="select">Menu suspenso</option>
+              <option value="number">Numérico</option>
+              <option value="currency">Moeda</option>
+            </select>
+            <input id="new-col-opts" placeholder="Opções separadas por vírgula (se menu)" style="flex:1;min-width:160px;border:1.5px solid #D1D5DB;border-radius:7px;padding:7px 10px;font-size:13px;outline:none;">
+            <button class="btn-primary" onclick="addCustomCol()" style="white-space:nowrap;">Adicionar</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
+          <button class="btn-secondary" onclick="closeModal('modal-esteira-config')">Cancelar</button>
+          <button class="btn-primary" onclick="saveEsteiraConfig()">Salvar Configuração</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Trocar Empreendimento (in-page) -->
+<div class="modal-overlay" id="modal-switch-emp" onclick="overlayClose(event,'modal-switch-emp')">
+  <div class="modal-box" style="max-width:640px;">
+    <div class="modal-header">
+      <h2>Trocar Empreendimento</h2>
+      <button class="modal-close" onclick="closeModal('modal-switch-emp')">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:#6B7280;margin-bottom:20px;">Selecione o empreendimento para atualizar os dados da tela.</p>
+      <div class="emp-grid" id="switch-emp-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr));"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Novo Produto -->
+<div class="modal-overlay" id="modal-novo-produto" onclick="overlayClose(event,'modal-novo-produto')">
+  <div class="modal-box">
+    <div class="modal-header"><h2 id="modal-produto-title">Novo Empreendimento</h2><button class="modal-close" onclick="closeModal('modal-novo-produto')">×</button></div>
+    <div class="modal-body">
+      <form id="form-produto" onsubmit="salvarProduto(event)">
+        <input type="hidden" id="prod-edit-id">
+        <div class="sec-title"><div class="accent"></div><h3>Dados</h3></div>
+        <div class="grid-2" style="margin-bottom:18px;">
+          <div class="form-group"><label>Nome <span class="req">*</span></label><input id="prod-nome" required></div>
+          <div class="form-group"><label>Divisão <span class="req">*</span></label>
+            <select id="prod-divisao" required><option value="">Selecione...</option><option>Residencial</option><option>Comercial</option><option>Corporativo</option><option>Investimento</option></select>
+          </div>
+          <div class="form-group"><label>Incorporador <span class="req">*</span></label><input id="prod-incorporador" required></div>
+          <div class="form-group"><label>Resp. Atendimento <span class="req">*</span></label><input id="prod-responsavel" required></div>
+          <div class="form-group"><label>Previsão VGV (R$) <span class="req">*</span></label><input id="prod-previsao" type="number" required></div>
+          <div class="form-group"><label>Meta Unidades <span class="req">*</span></label><input id="prod-meta-unidades" type="number" min="1" required></div>
+          <div class="form-group" style="grid-column:1/-1;"><label>Status</label>
+            <button type="button" id="prod-status-btn" onclick="toggleProdStatus()" style="padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;border:2px solid #10B981;background:rgba(16,185,129,.07);color:#10B981;cursor:pointer;width:fit-content;">✓ Ativo</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+          <button type="button" class="btn-secondary" onclick="closeModal('modal-novo-produto')">Cancelar</button>
+          <button type="submit" class="btn-primary" id="prod-submit-btn">Cadastrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Novo Usuário -->
+<div class="modal-overlay" id="modal-novo-usuario" onclick="overlayClose(event,'modal-novo-usuario')">
+  <div class="modal-box">
+    <div class="modal-header"><h2 id="modal-user-title">Novo Usuário</h2><button class="modal-close" onclick="closeModal('modal-novo-usuario')">×</button></div>
+    <div class="modal-body">
+      <form id="form-usuario" onsubmit="salvarUsuario(event); return false;" action="javascript:void(0)">
+        <input type="hidden" id="user-edit-id">
+        <div class="grid-2" style="margin-bottom:18px;">
+          <div class="form-group"><label>Nome Completo <span class="req">*</span></label><input id="user-nome" required></div>
+          <div class="form-group"><label>Login <span class="req">*</span></label><input id="user-login" required></div>
+          <div class="form-group"><label>Senha</label><input id="user-senha" type="password" placeholder="Deixe vazio para manter"></div>
+          <div class="form-group"><label>Perfil <span class="req">*</span></label>
+            <select id="user-perfil" required onchange="onUserPerfilChange(this.value)"><option value="">Selecione...</option><option value="gestor">Gestor</option><option value="juridico">Jurídico</option><option value="comercial">Comercial</option></select>
+          </div>
+        </div>
+        <!-- EMPRESAS PERMITIDAS -->
+        <div id="user-empresas-wrap" style="margin-bottom:18px;">
+          <div class="sec-title" style="margin-bottom:10px;">
+            <div class="accent"></div>
+            <h3>Empresas Permitidas</h3>
+          </div>
+          <!-- Banner para Admin/Gestor (sem restrição) -->
+          <div id="user-empresas-all-banner" style="display:none;padding:12px 16px;background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:10px;display:flex;align-items:center;gap:10px;">
+            <span style="font-size:18px;">✅</span>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#166534;">Acesso a todas as empresas</div>
+              <div style="font-size:11px;color:#16A34A;margin-top:1px;">Admin e Gestor têm acesso irrestrito a todas as empresas do sistema.</div>
+            </div>
+          </div>
+          <!-- Grid de checkboxes para Jurídico/Comercial -->
+          <div id="user-empresas-checkboxes-wrap" style="display:none;">
+            <div id="user-empresas-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+              <div id="user-empresas-hint" style="font-size:11px;color:#6B7280;">
+                Selecione as empresas que este usuário poderá visualizar.
+              </div>
+              <div style="display:flex;gap:6px;">
+                <button type="button" onclick="selectAllEmpresas()" style="padding:4px 10px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#374151;font-size:11px;font-weight:600;cursor:pointer;">Todas</button>
+                <button type="button" onclick="clearAllEmpresas()" style="padding:4px 10px;border-radius:6px;border:1px solid #D1D5DB;background:#fff;color:#374151;font-size:11px;font-weight:600;cursor:pointer;">Nenhuma</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+          <button type="button" class="btn-secondary" onclick="closeModal('modal-novo-usuario')">Cancelar</button>
+          <button type="button" class="btn-primary" id="user-submit-btn" onclick="salvarUsuario(event)">Cadastrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+// ══════════════════════════════════════════════════════
+// CONSTANTES
+// ══════════════════════════════════════════════════════
+const PERFIL_LABELS={admin:'Administrador',gestor:'Gestor',juridico:'Jurídico',comercial:'Comercial'};
+const PERFIL_ICONS={admin:'🔑',gestor:'📋',juridico:'⚖️',comercial:'🏷️'};
+const PERFIL_RC={admin:'rt-admin',gestor:'rt-gestor',juridico:'rt-juridico',comercial:'rt-comercial'};
+
+const EMPRESAS=['Lopes SP','Lopes D','Lopes LN','Lopes ABC','LIL','Outros'];
+const TIPOLOGIAS=['RV','HIS 1','HMP','HIS 2'];
+const STATUS_OPTIONS=['Validação','Rodando','Parado','Pronto','PE','C.Corretor','A.Comercial','Desistência'];
+const ANALISE_OPTIONS=['Em Análise','Aprovado','Reprovado','Sem Análise de Crédito'];
+
+const STATUS_COLOR={
+  'Validação':'#8B5CF6','Rodando':'#3B82F6','Parado':'#F59E0B',
+  'Pronto':'#10B981','PE':'#16A34A','C.Corretor':'#F97316',
+  'A.Comercial':'#EC4899','Desistência':'#EF4444',
+  'Aprovado':'#10B981','Reprovado':'#EF4444',
+  'Em Análise':'#F59E0B','Sem Análise de Crédito':'#9CA3AF',
+};
+
+// Colunas base da esteira (todas as colunas padrão)
+const BASE_COLS = [
+  {key:'pv',        label:'PV',             type:'number',  opts:[],             active:true},
+  {key:'tipologia', label:'Tipologia',       type:'select',  opts:TIPOLOGIAS,     active:true},
+  {key:'emTempo',   label:'Em Tempo',        type:'select',  opts:['SIM','NÃO'],  active:true},
+  {key:'analise',   label:'Análise de Crédito', type:'select', opts:ANALISE_OPTIONS, active:true},
+  {key:'torre',     label:'Torre',           type:'text',    opts:[],             active:true},
+  {key:'unidade',   label:'Unidade',         type:'text',    opts:[],             active:true},
+  {key:'vgv',       label:'VGV',             type:'currency',opts:[],             active:true},
+  {key:'corretor',  label:'Corretor',        type:'text',    opts:[],             active:true},
+  {key:'supervisor',label:'Supervisor',      type:'text',    opts:[],             active:true},
+  {key:'diretoria', label:'Diretoria',       type:'text',    opts:[],             active:true},
+  {key:'empresa',   label:'Empresa',         type:'select',  opts:EMPRESAS,       active:true},
+  {key:'cliente',   label:'Cliente',         type:'text',    opts:[],             active:true},
+  {key:'pendencia', label:'Pendência',       type:'text',    opts:[],             active:false},
+  {key:'status',    label:'Status',          type:'select',  opts:STATUS_OPTIONS, active:true},
+];
+
+// ══════════════════════════════════════════════════════
+// ESTADO GLOBAL
+// ══════════════════════════════════════════════════════
+function genId(){return Math.random().toString(36).substr(2,9).toUpperCase()}
+
+let currentUser=null, currentEmp=null;
+
+// Returns the list of empresas the current user can see.
+// Admin/Gestor with empty array → all empresas (no restriction).
+function getEmpresasPermitidas() {
+  if (!currentUser) return [];
+  const perfil = currentUser.perfil;
+  // Admin always sees everything
+  if (perfil === 'admin') return [];
+  // Gestor with no restriction → all
+  const ep = currentUser.empresas_permitidas || [];
+  if (perfil === 'gestor' && ep.length === 0) return [];
+  return ep; // empty means all for admin/gestor; non-empty = restriction
+}
+
+// Returns true if this empresa is visible to the current user
+function empresaPermitida(emp) {
+  const ep = getEmpresasPermitidas();
+  if (ep.length === 0) return true; // no restriction
+  return ep.includes(emp);
+}
+
+let usuarios=[
+  {id:'u1',login:'admin',    senha:'admin123', nome:'Administrador',   perfil:'admin',    ativo:true, empresas_permitidas:[], ultimoAcesso:new Date(Date.now()-3600000)},
+  {id:'u2',login:'gestor',   senha:'gestor123',nome:'Carlos Gestor',   perfil:'gestor',   ativo:true, empresas_permitidas:[], ultimoAcesso:new Date(Date.now()-7200000)},
+  {id:'u3',login:'juridico', senha:'jur123',   nome:'Ana Jurídico',    perfil:'juridico', ativo:true, empresas_permitidas:['Lopes SP','Lopes D'], ultimoAcesso:new Date(Date.now()-18000000)},
+  {id:'u4',login:'comercial',senha:'com123',   nome:'Pedro Comercial', perfil:'comercial',ativo:true, empresas_permitidas:['Lopes SP'], ultimoAcesso:new Date(Date.now()-86400000)},
+];
+
+let produtos=[
+  {id:genId(),nome:'Parque das Flores',     incorporador:'MRV Engenharia',  responsavelAtendimento:'Fernanda Lima',   previsaoVendas:3200000,metaUnidades:12,divisao:'Residencial',ativo:true},
+  {id:genId(),nome:'Residencial Alto da Serra',incorporador:'Cyrela Brazil',responsavelAtendimento:'Paulo Souza',    previsaoVendas:5800000,metaUnidades:20,divisao:'Residencial',ativo:true},
+  {id:genId(),nome:'Vila Moderna',          incorporador:'Even Construtora',responsavelAtendimento:'Sandra Oliveira',previsaoVendas:2100000,metaUnidades:8, divisao:'Comercial',  ativo:true},
+  {id:genId(),nome:'Jardim Primavera',      incorporador:'Tecnisa',         responsavelAtendimento:'Ricardo Campos', previsaoVendas:4500000,metaUnidades:15,divisao:'Residencial',ativo:true},
+  {id:genId(),nome:'Edifício Central',      incorporador:'JHSF',            responsavelAtendimento:'Camila Torres',  previsaoVendas:8000000,metaUnidades:30,divisao:'Corporativo', ativo:false},
+  {id:genId(),nome:'Condomínio Bela Vista', incorporador:'Brookfield',      responsavelAtendimento:'Diego Ferreira', previsaoVendas:6200000,metaUnidades:22,divisao:'Residencial',ativo:true},
+];
+
+// Configuração de colunas por produto (key = nome do produto)
+// Deep-clone das colunas base para cada produto
+function getDefaultCols(){return JSON.parse(JSON.stringify(BASE_COLS))}
+let esteiraConfigs={}; // { 'Nome do Produto': [col, ...] }
+produtos.forEach(p=>{ esteiraConfigs[p.nome]=getDefaultCols(); });
+function ensureEsteiraConfig(nome){if(!esteiraConfigs[nome])esteiraConfigs[nome]=getDefaultCols();}
+
+// Processos: agora são linhas da esteira com campos livres
+let processos=[
+  {id:genId(),empreendimento:'Parque das Flores',        pv:'101001',tipologia:'RV',   emTempo:'SIM',analise:'Aprovado',             torre:'T1',unidade:'101',vgv:850000, corretor:'Carlos Mendes',   supervisor:'Fernanda Lima',  diretoria:'Dir. SP',  empresa:'Lopes SP', cliente:'Ana Beatriz Costa',        pendencia:'',status:'Pronto'},
+  {id:genId(),empreendimento:'Parque das Flores',        pv:'102005',tipologia:'HIS 1',emTempo:'SIM',analise:'Em Análise',            torre:'T1',unidade:'205',vgv:760000, corretor:'Carlos Mendes',   supervisor:'Fernanda Lima',  diretoria:'Dir. SP',  empresa:'Lopes SP', cliente:'Gustavo Pereira',          pendencia:'Doc pendente',status:'Parado'},
+  {id:genId(),empreendimento:'Residencial Alto da Serra',pv:'201003',tipologia:'HMP',  emTempo:'NÃO',analise:'Aprovado',             torre:'T2',unidade:'303',vgv:1200000,corretor:'Juliana Ramos',   supervisor:'Paulo Souza',    diretoria:'Dir. SP',  empresa:'Lopes SP', cliente:'Roberto Alves',            pendencia:'',status:'Rodando'},
+  {id:genId(),empreendimento:'Residencial Alto da Serra',pv:'201008',tipologia:'RV',   emTempo:'SIM',analise:'Aprovado',             torre:'T1',unidade:'115',vgv:890000, corretor:'Marcos Vieira',   supervisor:'Sandra Oliveira',diretoria:'Dir. D',   empresa:'Lopes D',  cliente:'Pedro Moraes',             pendencia:'',status:'Pronto'},
+  {id:genId(),empreendimento:'Vila Moderna',             pv:'301012',tipologia:'RV',   emTempo:'SIM',analise:'Sem Análise de Crédito',torre:'—', unidade:'S12', vgv:550000, corretor:'Diego Ferreira',  supervisor:'Camila Torres',  diretoria:'Dir. LIL', empresa:'LIL',      cliente:'Tech Solutions LTDA',      pendencia:'',status:'PE'},
+  {id:genId(),empreendimento:'Jardim Primavera',         pv:'401007',tipologia:'HIS 2',emTempo:'NÃO',analise:'Em Análise',           torre:'A', unidade:'07',  vgv:980000, corretor:'Patrícia Nunes',  supervisor:'Ricardo Campos', diretoria:'Dir. ABC', empresa:'Lopes ABC',cliente:'Família Monteiro',          pendencia:'Pendência crédito',status:'Parado'},
+  {id:genId(),empreendimento:'Condomínio Bela Vista',    pv:'501021',tipologia:'RV',   emTempo:'SIM',analise:'Aprovado',             torre:'T3',unidade:'501',vgv:1450000,corretor:'Ana Silva',        supervisor:'João Costa',     diretoria:'Dir. LN',  empresa:'Lopes LN', cliente:'Marina Carvalho',          pendencia:'',status:'Rodando'},
+  {id:genId(),empreendimento:'Condomínio Bela Vista',    pv:'501022',tipologia:'HMP',  emTempo:'SIM',analise:'Reprovado',            torre:'T3',unidade:'502',vgv:980000, corretor:'Patrícia Nunes',  supervisor:'Ricardo Campos', diretoria:'Dir. ABC', empresa:'Lopes ABC',cliente:'Fernando Dias',             pendencia:'Crédito reprovado',status:'Desistência'},
+];
+
+// ══════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════
+function formatBRL(v){return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:0}).format(v||0)}
+function parseBRL(s){if(!s||s==='')return 0;const t=String(s).replace(/[^\d,.]/g,'');const n=t.replace(/\.(\d{3})/g,'$1').replace(',','.');return parseFloat(n)||0}
+function elapsed(d){if(!d)return'—';const diff=Date.now()-new Date(d).getTime();if(isNaN(diff)||diff<0||diff>315360000000)return'—';const days=Math.floor(diff/86400000),hours=Math.floor((diff%86400000)/3600000),mins=Math.floor((diff%3600000)/60000);if(days>0)return`${days}d ${hours}h`;if(hours>0)return`${hours}h ${mins}m`;return`${mins}m`}
+function badge(label,color){const c=color||'#6B7280';return`<span class="badge" style="color:${c};border-color:${c}44;background:${c}22;">${label}</span>`}
+function statusPill(st){const c=STATUS_COLOR[st]||'#6B7280';return`<span class="status-pill" style="color:${c};border-color:${c}44;background:${c}18;">${st||'—'}</span>`}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function overlayClose(e,id){if(e.target===e.currentTarget)closeModal(id)}
+
+// ══════════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════════
+function doLogin(){
+  const login=document.getElementById('li-user').value.trim();
+  const senha=document.getElementById('li-pass').value;
+  const user=usuarios.find(u=>u.login===login&&u.senha===senha&&u.ativo);
+  const err=document.getElementById('login-error');
+  if(!user){err.style.display='block';return}
+  err.style.display='none';
+  currentUser=user; user.ultimoAcesso=new Date();
+  const p=user.perfil;
+  if(p==='admin'||p==='gestor'){currentEmp=null;enterSystem();}
+  else showSelectEmp();
+}
+
+function showSelectEmp(fromInside){
+  if(!fromInside){
+    document.getElementById('screen-login').classList.remove('active');
+    document.getElementById('screen-login').style.display='none';
+  }
+  const ss=document.getElementById('screen-select');
+  ss.classList.add('active');
+  const p=currentUser.perfil;
+  document.getElementById('sel-role-badge').textContent=PERFIL_ICONS[p]+' '+PERFIL_LABELS[p];
+  document.getElementById('sel-title').textContent=p==='juridico'?'Selecione o Empreendimento — Jurídico':'Selecione o Empreendimento — Comercial';
+  document.getElementById('sel-user-label').textContent='Olá, '+currentUser.nome;
+  const grid=document.getElementById('emp-grid');
+  const ativos=produtos.filter(x=>x.ativo);
+  grid.innerHTML=ativos.map(e=>`
+    <div class="emp-card" onclick="selectEmpFrom('${e.nome}',${fromInside?1:0})">
+      <div class="ec-div">${e.divisao}</div>
+      <div class="ec-nome">${e.nome}</div>
+      <div class="ec-inc">${e.incorporador}</div>
+      <div class="ec-arr">→</div>
+    </div>`).join('')||'<div style="grid-column:1/-1;text-align:center;padding:40px;color:#9CA3AF;">Nenhum empreendimento ativo.</div>';
+}
+
+function selectEmpFrom(nome,fromInside){
+  currentEmp=nome;
+  document.getElementById('screen-select').classList.remove('active');
+  if(fromInside){setupTopbarUser();renderCurrentPage();}
+  else enterSystem();
+}
+
+function enterSystem(){
+  document.getElementById('screen-login').style.display='none';
+  document.getElementById('screen-login').classList.remove('active');
+  document.getElementById('screen-select').classList.remove('active');
+  const sys=document.getElementById('screen-system');
+  sys.style.display='block';
+  applyPermissions();
+  setupTopbarUser();
+  document.getElementById('tb-data').textContent=new Date().toLocaleDateString('pt-BR');
+  const p=currentUser.perfil;
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+  if(p==='comercial'){
+    document.getElementById('page-performance').classList.add('active');
+    document.getElementById('nav-performance').classList.add('active');
+    renderPerformance();
+  } else {
+    document.getElementById('page-juridico').classList.add('active');
+    document.getElementById('nav-juridico').classList.add('active');
+    renderEsteira();
+  }
+}
+
+function applyPermissions(){
+  const p=currentUser.perfil;
+  const show=(id,v)=>document.getElementById(id).style.display=v?'':'none';
+  show('nav-juridico',   p!=='comercial');
+  show('nav-performance',p!=='juridico');
+  show('nav-config',     p==='admin'||p==='gestor');
+  show('nav-usuarios',   p==='admin');
+  // Switch emp button only for restricted profiles
+  show('switch-emp-btn', p==='juridico'||p==='comercial');
+}
+
+function setupTopbarUser(){
+  document.getElementById('tb-avatar').textContent=currentUser.nome.charAt(0).toUpperCase();
+  document.getElementById('tb-uname').textContent=currentUser.nome;
+  document.getElementById('tb-urole').textContent=PERFIL_LABELS[currentUser.perfil];
+  const et=document.getElementById('emp-tag-tb');
+  const epBadge=buildEmpresaBadgeHtml();
+  et.innerHTML=(currentEmp?`<span class="emp-tag">🏢 ${currentEmp}</span> `:'') + epBadge;
+}
+
+function doLogout(){
+  currentUser=null;currentEmp=null;
+  document.getElementById('screen-system').style.display='none';
+  document.getElementById('screen-select').classList.remove('active');
+  const sl=document.getElementById('screen-login');
+  sl.style.display='';sl.classList.add('active');
+  document.getElementById('li-user').value='';document.getElementById('li-pass').value='';
+  document.getElementById('login-error').style.display='none';
+  const _pfp=document.getElementById('perf-filter-prod');if(_pfp){_pfp.value='';_pfp.disabled=false;}
+  const _pfe=document.getElementById('perf-filter-emp');if(_pfe)_pfe.value='';
+  const _js=document.getElementById('jur-search');if(_js)_js.value='';
+}
+
+// ══════════════════════════════════════════════════════
+// SWITCH EMP IN-PAGE
+// ══════════════════════════════════════════════════════
+function showSwitchEmpModal(){
+  const grid=document.getElementById('switch-emp-grid');
+  const ativos=produtos.filter(x=>x.ativo);
+  grid.innerHTML=ativos.map(e=>`
+    <div class="emp-card" style="${e.nome===currentEmp?'border-color:#C8102E;background:rgba(200,16,46,.03);':''}" onclick="doSwitchEmp('${e.nome}')">
+      <div class="ec-div">${e.divisao}</div>
+      <div class="ec-nome">${e.nome}${e.nome===currentEmp?' <span style="font-size:10px;color:#C8102E;">● atual</span>':''}</div>
+      <div class="ec-inc">${e.incorporador}</div>
+      <div class="ec-arr">→</div>
+    </div>`).join('');
+  openModal('modal-switch-emp');
+}
+function doSwitchEmp(nome){
+  currentEmp=nome;
+  closeModal('modal-switch-emp');
+  setupTopbarUser();
+  renderCurrentPage();
+}
+
+// ══════════════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════════════
+function switchTab(tab,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(tab==='juridico')renderEsteira();
+  if(tab==='performance')renderPerformance();
+  if(tab==='config')renderConfig();
+  if(tab==='usuarios')renderUsuarios();
+}
+function renderCurrentPage(){
+  const active=document.querySelector('.page.active');
+  if(!active)return;
+  const id=active.id.replace('page-','');
+  if(id==='juridico')renderEsteira();
+  if(id==='performance')renderPerformance();
+  if(id==='config')renderConfig();
+  if(id==='usuarios')renderUsuarios();
+}
+
+// ══════════════════════════════════════════════════════
+// HELPER: get active cols for a product/context
+// ══════════════════════════════════════════════════════
+function getActiveCols(empNome){
+  ensureEsteiraConfig(empNome);
+  return esteiraConfigs[empNome].filter(c=>c.active);
+}
+
+// ══════════════════════════════════════════════════════
+// ESTEIRA — RENDER
+// ══════════════════════════════════════════════════════
+function getFilteredProcessos(){
+  const q=(document.getElementById('jur-search').value||'').toLowerCase();
+  const ativos=produtos.filter(p=>p.ativo).map(p=>p.nome);
+  let rows=processos.filter(p=>ativos.includes(p.empreendimento));
+  // Filter by currentEmp (if restricted profile)
+  if(currentEmp) rows=rows.filter(p=>p.empreendimento===currentEmp);
+  // Filter by empresas_permitidas
+  const ep=getEmpresasPermitidas();
+  if(ep.length>0) rows=rows.filter(p=>ep.includes(p.empresa));
+  if(q) rows=rows.filter(p=>Object.values(p).some(v=>String(v).toLowerCase().includes(q)));
+  return rows;
+}
+
+function renderEsteira(){
+  if(!currentUser)return;
+  const filtered=getFilteredProcessos();
+  const p=currentUser.perfil;
+  const canEdit=p!=='comercial';
+
+  // Title
+  const titulo=currentEmp||'Todos os empreendimentos';
+  document.getElementById('jur-title').textContent='Esteira Jurídica — '+titulo;
+  document.getElementById('jur-subtitle').textContent=currentEmp?
+    (produtos.find(x=>x.nome===currentEmp)||{incorporador:''}).incorporador||'':
+    'Visão consolidada de todos os empreendimentos ativos';
+  document.getElementById('esteira-title-bar').textContent=`${filtered.length} processo${filtered.length!==1?'s':''} ${currentEmp?'· '+currentEmp:''}`;
+
+  // KPIs
+  renderJurKpis(filtered);
+
+  // Determine cols: if single emp, use its config; else use base
+  const cols=currentEmp?getActiveCols(currentEmp):BASE_COLS.filter(c=>c.active);
+
+  // thead
+  const thead=document.getElementById('esteira-thead');
+  thead.innerHTML=`<tr>
+    <th style="width:32px;">#</th>
+    ${!currentEmp?'<th>Empreendimento</th>':''}
+    ${cols.map(col=>`<th style="min-width:${colMinWidth(col.type)}px;">${col.label}</th>`).join('')}
+    ${canEdit?'<th style="width:60px;">Ações</th>':''}
+  </tr>`;
+
+  // tbody
+  const tbody=document.getElementById('esteira-tbody');
+  if(!filtered.length){
+    const span=(currentEmp?0:1)+cols.length+(canEdit?1:0)+1;
+    tbody.innerHTML=`<tr><td colspan="${span}" style="text-align:center;padding:40px;color:#9CA3AF;">Nenhum processo encontrado.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML=filtered.map((row,i)=>{
+    const rowCols=currentEmp?cols:BASE_COLS.filter(c=>c.active);
+    const st=row.status||'';
+    const rowClass=st==='Parado'?'row-parado':st==='Pronto'||st==='PE'?'row-pronto':'';
+    return `<tr class="${rowClass}" data-id="${row.id}">
+      <td class="row-num">${i+1}</td>
+      ${!currentEmp?`<td style="font-weight:600;font-size:12px;color:#1A1A2E;white-space:nowrap;">${row.empreendimento}</td>`:''}
+      ${rowCols.map(col=>renderCell(row,col,canEdit)).join('')}
+      ${canEdit?`<td class="col-actions"><button onclick="deleteRow('${row.id}')">✕</button></td>`:''}
+    </tr>`;
+  }).join('');
+}
+
+function colMinWidth(type){
+  if(type==='currency')return 100;
+  if(type==='select')return 90;
+  if(type==='number')return 80;
+  return 90;
+}
+
+function renderCell(row,col,canEdit){
+  const val=row[col.key]!==undefined?row[col.key]:'';
+  if(!canEdit){
+    if(col.key==='status')return`<td>${statusPill(val)}</td>`;
+    if(col.type==='currency')return`<td style="font-weight:700;color:#C8102E;">${formatBRL(val)}</td>`;
+    return`<td>${val||'—'}</td>`;
+  }
+  if(col.key==='status'){
+    return`<td>${buildSelect(row.id,col.key,STATUS_OPTIONS,val,true)}</td>`;
+  }
+  if(col.type==='select'){
+    // For empresa field: only show allowed empresas
+    const opts=col.key==='empresa'?getEmpresasOpts():col.opts;
+    return`<td>${buildSelect(row.id,col.key,opts,val,false)}</td>`;
+  }
+  if(col.type==='currency'){
+    return`<td><input class="cell-edit" type="text" value="${formatBRL(val)}" onblur="updateCell('${row.id}','${col.key}',parseBRL(this.value));this.value=formatBRL(parseBRL(this.value))" onfocus="if(!this.value||this.value==='R$\u00a00')this.value=''" style="min-width:90px;font-weight:700;color:#C8102E;"></td>`;
+  }
+  if(col.type==='number'){
+    return`<td><input class="cell-edit" type="text" value="${val}" onblur="updateCell('${row.id}','${col.key}',this.value)" style="min-width:70px;"></td>`;
+  }
+  // text / custom
+  const isLong=col.key==='pendencia'||col.key==='cliente';
+  return`<td><input class="cell-edit" type="text" value="${String(val).replace(/"/g,'&quot;')}" onblur="updateCell('${row.id}','${col.key}',this.value)" style="min-width:${isLong?110:80}px;"></td>`;
+}
+
+function getEmpresasOpts(){
+  const ep=getEmpresasPermitidas();
+  if(ep.length===0) return EMPRESAS;
+  return EMPRESAS.filter(e=>ep.includes(e));
+}
+
+function buildSelect(rowId,key,opts,current,isStatus){
+  const c=isStatus?(STATUS_COLOR[current]||'#6B7280'):'#374151';
+  const bg=isStatus?`${STATUS_COLOR[current]||'#6B7280'}18`:'transparent';
+  const options=opts.map(o=>`<option value="${o}"${o===current?' selected':''}>${o}</option>`).join('');
+  const style=isStatus?`font-weight:700;color:${c};background:${bg};border-radius:12px;padding:3px 8px;`:'';
+  return`<select class="cell-select" style="${style}" onchange="updateCell('${rowId}','${key}',this.value);${isStatus?'applyStatusStyle(this)':''}">${options}</select>`;
+}
+
+function applyStatusStyle(sel){
+  const c=STATUS_COLOR[sel.value]||'#6B7280';
+  sel.style.color=c;
+  sel.style.background=`${c}18`;
+  const tr=sel.closest('tr');
+  if(tr){tr.className=sel.value==='Parado'?'row-parado':sel.value==='Pronto'||sel.value==='PE'?'row-pronto':'';}
+  renderJurKpis(getFilteredProcessos());
+}
+
+function _updateCellLocal(rowId,key,value){
+  const row=processos.find(r=>r.id===rowId);
+  if(row)row[key]=key==='vgv'?parseBRL(value):value;
+  renderJurKpis(getFilteredProcessos());
+}
+function updateCell(rowId,key,value){ _updateCellLocal(rowId,key,value); }
+
+function _deleteRowLocal(rowId){
+  if(confirm('Remover este processo?')){
+    processos=processos.filter(r=>r.id!==rowId);
+    renderEsteira();
+  }
+}
+function deleteRow(rowId){ _deleteRowLocal(rowId); }
+
+function _addProcessoRowLocal(){
+  let emp=currentEmp;
+  if(!emp){
+    const ativos=produtos.filter(p=>p.ativo);
+    if(!ativos.length){alert('Nenhum empreendimento ativo. Cadastre um nas Configurações.');return;}
+    if(ativos.length===1){emp=ativos[0].nome;}
+    else{
+      const nomes=ativos.map(p=>p.nome);
+      const escolha=prompt('Informe o empreendimento para o novo processo:\n\n'+nomes.map((n,i)=>`${i+1}. ${n}`).join('\n')+'\n\nDigite o nome exato:');
+      if(!escolha){return;}
+      const found=ativos.find(p=>p.nome.toLowerCase()===escolha.trim().toLowerCase());
+      if(!found){alert('Empreendimento não encontrado. Verifique a digitação.');return;}
+      emp=found.nome;
+    }
+  }
+  const _defEmp=getEmpresasPermitidas().length>0?getEmpresasPermitidas()[0]:'Lopes SP';
+  const newRow={id:genId(),empreendimento:emp||'',pv:'',tipologia:'RV',emTempo:'SIM',analise:'Em Análise',torre:'',unidade:'',vgv:0,corretor:'',supervisor:'',diretoria:'',empresa:_defEmp,cliente:'',pendencia:'',status:'Validação'};
+  processos.push(newRow);
+  renderEsteira();
+  setTimeout(()=>{const tb=document.getElementById('esteira-tbody');if(tb){const last=tb.lastElementChild;if(last)last.scrollIntoView({behavior:'smooth',block:'nearest'})}},100);
+}
+function addProcessoRow(){ if(SB_MODE){_addProcessoRowSupabase();}else{_addProcessoRowLocal();} }
+
+// ══════════════════════════════════════════════════════
+// KPIs JURÍDICO
+// ══════════════════════════════════════════════════════
+function renderJurKpis(rows){
+  const total=rows.length;
+  const byStatus={};rows.forEach(r=>{byStatus[r.status]=(byStatus[r.status]||0)+1});
+  const vgvTotal=rows.reduce((s,r)=>s+(r.vgv||0),0);
+  const prontos=(byStatus['Pronto']||0)+(byStatus['PE']||0);
+  const parados=byStatus['Parado']||0;
+  const rodando=byStatus['Rodando']||0;
+  const validacao=byStatus['Validação']||0;
+
+  const cards=[
+    {label:'Total',      val:total,    vgv:vgvTotal,             bg:'#FFF1F2',border:'#FECDD3',accent:'#C8102E',
+     icon:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`},
+    {label:'Validação',  val:validacao,vgv:rows.filter(r=>r.status==='Validação').reduce((s,r)=>s+(r.vgv||0),0),bg:'#F5F3FF',border:'#DDD6FE',accent:'#8B5CF6',
+     icon:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`},
+    {label:'Rodando',    val:rodando,  vgv:rows.filter(r=>r.status==='Rodando').reduce((s,r)=>s+(r.vgv||0),0),   bg:'#EFF6FF',border:'#BFDBFE',accent:'#2563EB',
+     icon:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>`},
+    {label:'Parados',    val:parados,  vgv:rows.filter(r=>r.status==='Parado').reduce((s,r)=>s+(r.vgv||0),0),    bg:'#FFFBEB',border:'#FCD34D',accent:'#B45309',isAlerta:true,
+     icon:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`},
+    {label:'Pronto/PE',  val:prontos,  vgv:rows.filter(r=>r.status==='Pronto'||r.status==='PE').reduce((s,r)=>s+(r.vgv||0),0),bg:'#F0FDF4',border:'#BBF7D0',accent:'#16A34A',
+     icon:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`},
+  ];
+
+  // Add dynamic per-status counts for current emp's custom statuses
+  document.getElementById('jur-kpis').innerHTML=cards.map(c=>`
+    <div class="kpi-card${c.isAlerta?' kpi-alerta':''}" style="position:relative;background:${c.bg};border-color:${c.border};">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:${c.accent};">${c.label}</span>
+        <div style="width:32px;height:32px;border-radius:9px;background:${c.accent}18;color:${c.accent};display:flex;align-items:center;justify-content:center;">${c.icon}</div>
+      </div>
+      <div style="font-size:32px;font-weight:900;color:${c.accent};line-height:1;">${c.val}</div>
+      <div style="height:1px;background:${c.border};"></div>
+      <div>
+        <div style="font-size:9px;font-weight:600;text-transform:uppercase;color:${c.accent};opacity:.6;margin-bottom:2px;">VGV</div>
+        <div style="font-size:12px;font-weight:800;color:${c.accent};">${formatBRL(c.vgv)}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// CONFIGURAR ESTEIRA
+// ══════════════════════════════════════════════════════
+function openEsteiraConfig(){
+  // populate product dropdown
+  const sel=document.getElementById('esteira-config-prod');
+  const ativos=produtos.filter(p=>p.ativo);
+  sel.innerHTML='<option value="">Selecione...</option>'+ativos.map(p=>`<option value="${p.nome}"${p.nome===currentEmp?' selected':''}>${p.nome}</option>`).join('');
+  document.getElementById('esteira-config-body').style.display='none';
+  if(currentEmp){sel.value=currentEmp;loadEsteiraConfig(currentEmp);}
+  openModal('modal-esteira-config');
+}
+
+function loadEsteiraConfig(nomeProd){
+  if(!nomeProd){document.getElementById('esteira-config-body').style.display='none';return}
+  // ensure config exists
+  if(!esteiraConfigs[nomeProd]) esteiraConfigs[nomeProd]=getDefaultCols();
+  const cols=esteiraConfigs[nomeProd];
+  document.getElementById('esteira-config-body').style.display='block';
+  document.getElementById('modal-esteira-title').textContent=`Configurar Esteira — ${nomeProd}`;
+  renderStepsList(cols,nomeProd);
+}
+
+function renderStepsList(cols,nomeProd){
+  const list=document.getElementById('esteira-steps-list');
+  list.innerHTML=cols.map((col,i)=>{
+    const isCustom=!BASE_COLS.find(b=>b.key===col.key);
+    return`<div class="step-row" data-idx="${i}">
+      <span class="step-drag">⠿</span>
+      <input type="checkbox" ${col.active?'checked':''} onchange="toggleColActive('${nomeProd}',${i},this.checked)" style="cursor:pointer;">
+      <div class="step-color" style="background:${col.active?'#C8102E':'#D1D5DB'};"></div>
+      <span class="step-name" style="opacity:${col.active?1:.45};">${col.label}</span>
+      <span class="step-type">${col.type}</span>
+      ${isCustom?`<button class="btn-sm-danger" onclick="removeCustomCol('${nomeProd}',${i})">✕</button>`:''}
+      <div style="display:flex;gap:4px;margin-left:auto;">
+        ${i>0?`<button class="btn-sm-gray" onclick="moveCol('${nomeProd}',${i},-1)">↑</button>`:''}
+        ${i<cols.length-1?`<button class="btn-sm-gray" onclick="moveCol('${nomeProd}',${i},1)">↓</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleColActive(nomeProd,idx,val){
+  esteiraConfigs[nomeProd][idx].active=val;
+  renderStepsList(esteiraConfigs[nomeProd],nomeProd);
+}
+function moveCol(nomeProd,idx,dir){
+  const cols=esteiraConfigs[nomeProd];
+  const ni=idx+dir;
+  if(ni<0||ni>=cols.length)return;
+  [cols[idx],cols[ni]]=[cols[ni],cols[idx]];
+  renderStepsList(cols,nomeProd);
+}
+function removeCustomCol(nomeProd,idx){
+  esteiraConfigs[nomeProd].splice(idx,1);
+  renderStepsList(esteiraConfigs[nomeProd],nomeProd);
+}
+function addCustomCol(){
+  const name=document.getElementById('new-col-name').value.trim();
+  if(!name){alert('Informe o nome da coluna.');return}
+  const type=document.getElementById('new-col-type').value;
+  const opts=document.getElementById('new-col-opts').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const prodNome=document.getElementById('esteira-config-prod').value;
+  if(!prodNome){alert('Selecione um empreendimento primeiro.');return}
+  const key='custom_'+genId().toLowerCase();
+  esteiraConfigs[prodNome].push({key,label:name,type,opts,active:true});
+  renderStepsList(esteiraConfigs[prodNome],prodNome);
+  document.getElementById('new-col-name').value='';
+  document.getElementById('new-col-opts').value='';
+}
+function saveEsteiraConfig(){
+  closeModal('modal-esteira-config');
+  renderEsteira();
+}
+
+// ══════════════════════════════════════════════════════
+// EXPORT CSV
+// ══════════════════════════════════════════════════════
+function exportCSV(){
+  const rows=getFilteredProcessos();
+  const cols=currentEmp?getActiveCols(currentEmp):BASE_COLS.filter(c=>c.active);
+  const headers=['#','Empreendimento',...cols.map(c=>c.label)].join(';');
+  const lines=rows.map((r,i)=>[i+1,r.empreendimento,...cols.map(c=>c.type==='currency'?formatBRL(r[c.key]||0):r[c.key]||'')].join(';'));
+  const csv=[headers,...lines].join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent('\uFEFF'+csv);
+  a.download=`esteira_${currentEmp||'todos'}_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.csv`;
+  a.click();
+}
+
+// ══════════════════════════════════════════════════════
+// PERFORMANCE
+// ══════════════════════════════════════════════════════
+const rankingOrders={Corretor:'vgv',Supervisor:'vgv',Diretoria:'vgv'};
+
+function renderPerformance(){
+  if(!currentUser)return;
+  const prodAtivos=produtos.filter(p=>p.ativo);
+  const perfProd=document.getElementById('perf-filter-prod');
+  const cv=currentEmp||perfProd.value;
+  perfProd.innerHTML='<option value="">Todos os produtos</option>'+prodAtivos.map(p=>`<option value="${p.nome}"${p.nome===cv?' selected':''}>${p.nome}</option>`).join('');
+  if(currentEmp){perfProd.value=currentEmp;perfProd.disabled=true;perfProd.title='Filtrado pelo empreendimento do login';}else{perfProd.disabled=false;perfProd.title='';}
+
+  // Rebuild empresa filter dropdown limited to allowed empresas
+  const perfEmpSel = document.getElementById('perf-filter-emp');
+  const _epAllowed = getEmpresasPermitidas();
+  const _empOpts = _epAllowed.length > 0 ? _epAllowed : EMPRESAS;
+  const _feCurrent = perfEmpSel.value;
+  perfEmpSel.innerHTML = '<option value="">Todas as empresas</option>' +
+    _empOpts.map(e => `<option value="${e}"${e===_feCurrent?' selected':''}>${e}</option>`).join('');
+  if (_epAllowed.length > 0 && !_empOpts.includes(_feCurrent)) perfEmpSel.value = '';
+  const fE=document.getElementById('perf-filter-emp').value;
+  const fP=currentEmp||document.getElementById('perf-filter-prod').value||'';
+  const _ep=getEmpresasPermitidas();
+  const scopedRows=processos.filter(p=>{
+    if(!prodAtivos.find(x=>x.nome===p.empreendimento))return false;
+    if(currentEmp&&p.empreendimento!==currentEmp)return false;
+    if(_ep.length>0&&!_ep.includes(p.empresa))return false;
+    return(!fE||p.empresa===fE)&&(!fP||p.empreendimento===fP);
+  });
+
+  const titulo=currentEmp||'Todos os lançamentos';
+  document.getElementById('perf-title-h').textContent='Performance de Vendas — '+titulo;
+
+  const prontos=scopedRows.filter(r=>r.status==='Pronto'||r.status==='PE');
+  const emAnd=scopedRows.filter(r=>r.status!=='Pronto'&&r.status!=='PE'&&r.status!=='Desistência');
+  const desist=scopedRows.filter(r=>r.status==='Desistência');
+  const vgvTotal=scopedRows.reduce((s,r)=>s+(r.vgv||0),0);
+  const vgvFechado=prontos.reduce((s,r)=>s+(r.vgv||0),0);
+  const vgvAnd=emAnd.reduce((s,r)=>s+(r.vgv||0),0);
+  const convRate=scopedRows.length?Math.round((prontos.length/scopedRows.length)*100):0;
+
+  document.getElementById('perf-hero-kpis').innerHTML=[
+    {label:'VGV Total',val:formatBRL(vgvTotal),sub:`${scopedRows.length} processos`,icon:'💼'},
+    {label:'VGV Fechado',val:formatBRL(vgvFechado),sub:`${prontos.length} contratos`,icon:'🏆',accent:true},
+    {label:'Em Andamento',val:formatBRL(vgvAnd),sub:`${emAnd.length} ativos`,icon:'⚡'},
+    {label:'Taxa de Conversão',val:`${convRate}%`,sub:`${desist.length} desistências`,icon:'📊'},
+  ].map(k=>`
+    <div style="background:${k.accent?'#C8102E':'rgba(255,255,255,.08)'};border-radius:10px;padding:14px;border:${k.accent?'none':'1px solid rgba(255,255,255,.12)'};">
+      <div style="font-size:20px;">${k.icon}</div>
+      <div style="font-size:18px;font-weight:800;margin-top:5px;">${k.val}</div>
+      <div style="font-size:11px;color:${k.accent?'rgba(255,255,255,.8)':'rgba(255,255,255,.5)'};margin-top:3px;">${k.label}</div>
+      <div style="font-size:11px;color:${k.accent?'rgba(255,255,255,.65)':'rgba(255,255,255,.3)'};margin-top:1px;">${k.sub}</div>
+    </div>`).join('');
+
+  // status distribution - use actual status options from active products' esteiras
+  const bySt={};scopedRows.forEach(r=>{bySt[r.status||'—']=(bySt[r.status||'—']||0)+1});
+  const byTip={};scopedRows.forEach(r=>{byTip[r.tipologia||'—']=(byTip[r.tipologia||'—']||0)+1});
+
+  document.getElementById('perf-row1').innerHTML=`
+    <div class="card">
+      <div class="sec-title"><div class="accent"></div><h3>Funil de Vendas</h3></div>
+      ${[['Total',scopedRows.length,'#1A1A2E'],['Em Andamento',emAnd.length,'#3B82F6'],['Fechados',prontos.length,'#10B981']].map((f,i,a)=>`
+        <div style="margin-bottom:0;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:#374151;">${f[0]}</span><span style="font-size:15px;font-weight:800;color:${f[1]||'#1A1A2E'};">${f[1]}</span></div>
+          <div style="height:10px;background:#F3F4F6;border-radius:20px;overflow:hidden;"><div style="width:${scopedRows.length?Math.round((f[1]/scopedRows.length)*100):0}%;height:100%;background:${f[2]};border-radius:20px;"></div></div>
+          ${i<a.length-1?'<div style="text-align:center;color:#D1D5DB;font-size:12px;margin:4px 0;">▼</div>':''}
+        </div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="sec-title"><div class="accent"></div><h3>Distribuição por Status</h3></div>
+      ${Object.entries(bySt).sort((a,b)=>b[1]-a[1]).map(([st,ct])=>`
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
+          <div style="width:7px;height:7px;border-radius:50%;background:${STATUS_COLOR[st]||'#6B7280'};flex-shrink:0;"></div>
+          <span style="flex:1;font-size:12px;color:#374151;">${st}</span>
+          <span style="font-size:12px;font-weight:700;color:#1A1A2E;">${ct}</span>
+          <div style="width:44px;height:4px;background:#F3F4F6;border-radius:10px;overflow:hidden;"><div style="width:${scopedRows.length?Math.round((ct/scopedRows.length)*100):0}%;height:100%;background:${STATUS_COLOR[st]||'#6B7280'};"></div></div>
+        </div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="sec-title"><div class="accent"></div><h3>Por Tipologia</h3></div>
+      ${Object.entries(byTip).sort((a,b)=>b[1]-a[1]).map(([t,ct])=>`
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
+          <span style="flex:1;font-size:12px;color:#374151;font-weight:600;">${t}</span>
+          <span style="font-size:12px;font-weight:700;color:#1A1A2E;">${ct}</span>
+          <div style="width:60px;height:6px;background:#F3F4F6;border-radius:10px;overflow:hidden;"><div style="width:${scopedRows.length?Math.round((ct/scopedRows.length)*100):0}%;height:100%;background:#C8102E;"></div></div>
+        </div>`).join('')}
+    </div>`;
+
+  // Gauge
+  const meta=(currentEmp?[produtos.find(p=>p.nome===currentEmp)].filter(Boolean):prodAtivos).reduce((s,p)=>s+(p.previsaoVendas||0),0);
+  const gPct=meta>0?Math.min(vgvFechado/meta,1):0;
+  const gPctL=meta>0?Math.round((vgvFechado/meta)*100):0;
+  const gC=gPct>=1?'#10B981':gPct>=.7?'#F59E0B':'#C8102E';
+  document.getElementById('perf-gauge-wrap').innerHTML=`
+    <div style="text-align:center;padding:16px 0 4px;">
+      <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">VGV TOTAL VENDIDO</div>
+      <div style="position:relative;display:inline-block;width:190px;">
+        <svg viewBox="0 0 200 110" width="190" height="105">
+          <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#E5E7EB" stroke-width="15" stroke-linecap="round"/>
+          <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="${gC}" stroke-width="15" stroke-linecap="round" stroke-dasharray="${gPct*251.3} 251.3"/>
+        </svg>
+        <div style="position:absolute;bottom:0;left:0;right:0;text-align:center;">
+          <div style="font-size:28px;font-weight:900;color:#1A1A2E;">${gPctL}%</div>
+          <div style="font-size:11px;color:#9CA3AF;margin-top:1px;">da meta</div>
+        </div>
+      </div>
+      <div style="font-size:20px;font-weight:800;color:#C8102E;margin-top:10px;">${formatBRL(vgvFechado)}</div>
+      <div style="font-size:12px;color:#9CA3AF;margin-top:2px;">Meta: ${formatBRL(meta)}</div>
+    </div>`;
+
+  // Rankings
+  function buildRanking(fn){const m={};scopedRows.forEach(r=>{const n=(fn(r)||'').trim();if(!n)return;if(!m[n])m[n]={nome:n,count:0,vgv:0};m[n].count++;m[n].vgv+=(r.vgv||0)});return Object.values(m)}
+  document.getElementById('perf-rankings').innerHTML=[{t:'Corretor',fn:r=>r.corretor},{t:'Supervisor',fn:r=>r.supervisor},{t:'Diretoria',fn:r=>r.diretoria}].map(({t,fn})=>renderRankCard(t,buildRanking(fn))).join('');
+
+  // By empresa
+  const byE={};scopedRows.forEach(r=>{const e=r.empresa||'Outros';if(!byE[e])byE[e]={count:0,vgv:0};byE[e].count++;byE[e].vgv+=(r.vgv||0)});
+  const eList=Object.entries(byE).sort((a,b)=>b[1].vgv-a[1].vgv);
+  const mxE=Math.max(...eList.map(([,v])=>v.vgv),1);
+  // By product (only if not filtered to one)
+  const byP={};scopedRows.forEach(r=>{if(!byP[r.empreendimento])byP[r.empreendimento]={count:0,vgv:0};byP[r.empreendimento].count++;byP[r.empreendimento].vgv+=(r.vgv||0)});
+  const pList=Object.entries(byP).sort((a,b)=>b[1].vgv-a[1].vgv);
+  const mxP=Math.max(...pList.map(([,v])=>v.vgv),1);
+
+  document.getElementById('perf-row2').innerHTML=`
+    <div class="card"><div class="sec-title"><div class="accent"></div><h3>Por Empresa</h3></div>
+      ${eList.map(([emp,d])=>`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:12px;font-weight:700;color:#1A1A2E;">${emp} <span style="font-size:10px;color:#9CA3AF;">${d.count} proc.</span></span><span style="font-size:12px;font-weight:700;color:#C8102E;">${formatBRL(d.vgv)}</span></div><div style="height:5px;background:#F3F4F6;border-radius:10px;overflow:hidden;"><div style="width:${(d.vgv/mxE)*100}%;height:100%;background:#C8102E;border-radius:10px;"></div></div></div>`).join('')}
+    </div>
+    <div class="card"><div class="sec-title"><div class="accent"></div><h3>Por Empreendimento</h3></div>
+      ${pList.map(([emp,d])=>`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:12px;font-weight:700;color:#1A1A2E;">${emp} <span style="font-size:10px;color:#9CA3AF;">${d.count} un.</span></span><span style="font-size:12px;font-weight:700;color:#374151;">${formatBRL(d.vgv)}</span></div><div style="height:5px;background:#F3F4F6;border-radius:10px;overflow:hidden;"><div style="width:${(d.vgv/mxP)*100}%;height:100%;background:#1A1A2E;border-radius:10px;"></div></div></div>`).join('')}
+    </div>`;
+
+  // PvR
+  const scopedProds=currentEmp?prodAtivos.filter(p=>p.nome===currentEmp):prodAtivos;
+  const tPrev=scopedProds.reduce((s,p)=>s+(p.previsaoVendas||0),0);
+  const tReal=vgvFechado;const tAnd=vgvAnd;
+  document.getElementById('perf-pvr').innerHTML=`
+    <div class="sec-title"><div class="accent"></div><h3>Previsão × Realizado</h3></div>
+    <div class="grid-3" style="margin-bottom:18px;">
+      ${[['🎯','Total Previsto',formatBRL(tPrev),'#1A1A2E'],['🏆','Total Realizado',formatBRL(tReal),'#10B981'],['⚡','Em Andamento',formatBRL(tAnd),'#3B82F6']].map(([ic,l,v,c])=>`<div style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:10px;padding:14px;"><div style="font-size:18px;">${ic}</div><div style="font-size:17px;font-weight:800;color:${c};margin-top:5px;">${v}</div><div style="font-size:11px;color:#6B7280;font-weight:600;">${l}</div></div>`).join('')}
+    </div>
+    ${scopedProds.map(prod=>{
+      const pp=scopedRows.filter(r=>r.empreendimento===prod.nome);
+      const real=pp.filter(r=>r.status==='Pronto'||r.status==='PE').reduce((s,r)=>s+(r.vgv||0),0);
+      const and=pp.filter(r=>r.status!=='Pronto'&&r.status!=='PE'&&r.status!=='Desistência').reduce((s,r)=>s+(r.vgv||0),0);
+      const un=pp.filter(r=>r.status==='Pronto'||r.status==='PE').length;
+      const meta=prod.metaUnidades||0;
+      const pct=prod.previsaoVendas>0?Math.min((real/prod.previsaoVendas)*100,100):0;
+      const pctA=prod.previsaoVendas>0?Math.min(((real+and)/prod.previsaoVendas)*100,100):0;
+      const pctL=Math.round(pct);
+      const color=pct>=100?'#10B981':pct>=70?'#F59E0B':pct>=40?'#F97316':'#C8102E';
+      return`<div style="border:1px solid #E5E7EB;border-radius:10px;padding:16px;margin-bottom:12px;background:#fff;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+          <div><div style="font-size:15px;font-weight:800;color:#1A1A2E;">${prod.nome}</div><div style="font-size:11px;color:#6B7280;margin-top:2px;">${prod.divisao} · ${prod.responsavelAtendimento}</div></div>
+          <div style="display:flex;gap:14px;">
+            <div style="text-align:center;"><div style="font-size:16px;font-weight:800;color:${color};">${pctL}%</div><div style="font-size:9px;color:#9CA3AF;">VGV Real.</div></div>
+            <div style="text-align:center;"><div style="font-size:16px;font-weight:800;color:#1A1A2E;">${un}/${meta}</div><div style="font-size:9px;color:#9CA3AF;">Un. Vendidas</div></div>
+          </div>
+        </div>
+        <div style="height:10px;background:#F3F4F6;border-radius:20px;overflow:hidden;position:relative;margin-bottom:6px;">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:${pctA}%;background:rgba(59,130,246,.3);border-radius:20px;"></div>
+          <div style="position:absolute;left:0;top:0;bottom:0;width:${pct}%;background:${color};border-radius:20px;"></div>
+        </div>
+        <div style="display:flex;gap:14px;font-size:11px;flex-wrap:wrap;">
+          <span style="color:${color};font-weight:600;">Realizado: ${formatBRL(real)}</span>
+          <span style="color:#3B82F6;">Andamento: ${formatBRL(and)}</span>
+          <span style="color:#9CA3AF;">Meta VGV: ${formatBRL(prod.previsaoVendas)}</span>
+        </div>
+      </div>`;
+    }).join('')}`;
+
+  // Top VGVs
+  const topVGV=[...scopedRows].sort((a,b)=>(b.vgv||0)-(a.vgv||0)).slice(0,6);
+  document.getElementById('perf-top-vgv').innerHTML=`<div class="sec-title"><div class="accent"></div><h3>Maiores VGVs</h3></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
+    ${topVGV.map((r,i)=>`<div style="border:1px solid ${i===0?'rgba(200,16,46,.2)':'#E5E7EB'};border-radius:10px;padding:14px;background:${i===0?'rgba(200,16,46,.02)':'#fff'};">
+      <div style="font-size:10px;color:#9CA3AF;font-weight:700;">#${i+1} · ${r.id}</div>
+      <div style="font-size:13px;font-weight:700;color:#1A1A2E;margin-top:2px;">${r.empreendimento}</div>
+      <div style="font-size:12px;color:#6B7280;">${r.cliente}</div>
+      <div style="font-size:18px;font-weight:800;color:${i===0?'#C8102E':'#1A1A2E'};margin-top:8px;">${formatBRL(r.vgv)}</div>
+      <div style="margin-top:6px;">${statusPill(r.status)}</div>
+    </div>`).join('')}
+    </div>`;
+}
+
+function renderRankCard(title,data){
+  const order=rankingOrders[title]||'vgv';
+  const sorted=[...data].sort((a,b)=>order==='vgv'?b.vgv-a.vgv:b.count-a.count);
+  return`<div class="ranking-card">
+    <div class="ranking-header">
+      <span class="ranking-title">${title}</span>
+      <div style="display:flex;gap:4px;">
+        <button class="rank-toggle${order==='vgv'?' active':''}" onclick="setRankOrder('${title}','vgv')">VGV</button>
+        <button class="rank-toggle${order==='unidades'?' active':''}" onclick="setRankOrder('${title}','unidades')">Unid.</button>
+      </div>
+    </div>
+    <div style="padding:4px 0;">
+      ${sorted.slice(0,6).map((item,i)=>`<div class="ranking-row">
+        <span style="font-weight:700;color:#374151;">${i+1}</span>
+        <span style="font-size:12px;color:#111827;word-break:break-word;padding-right:6px;">${item.nome}</span>
+        <span style="font-size:12px;color:#374151;">${item.count}</span>
+        <span style="font-size:12px;font-weight:700;color:#1A1A2E;">${formatBRL(item.vgv)}</span>
+      </div>`).join('')||'<div style="text-align:center;padding:20px;color:#9CA3AF;font-size:12px;">Sem dados</div>'}
+    </div>
+  </div>`;
+}
+function setRankOrder(t,o){rankingOrders[t]=o;renderPerformance()}
+
+// ══════════════════════════════════════════════════════
+// CONFIGURAÇÕES
+// ══════════════════════════════════════════════════════
+function renderConfig(){
+  if(!currentUser)return;
+  const at=produtos.filter(p=>p.ativo).length;
+  const in_=produtos.filter(p=>!p.ativo).length;
+  const pv=produtos.filter(p=>p.ativo).reduce((s,p)=>s+(p.previsaoVendas||0),0);
+  document.getElementById('config-kpis').innerHTML=[
+    ['🏢','Total',produtos.length,'#1A1A2E'],['✅','Ativos',at,'#10B981'],
+    ['⏸','Inativos',in_,'#6B7280'],['🎯','Prev. Total',formatBRL(pv),'#C8102E'],
+  ].map(([ic,l,v,c])=>`<div class="card" style="padding:16px;"><div style="font-size:20px;">${ic}</div><div style="font-size:19px;font-weight:800;color:${c};margin-top:5px;">${v}</div><div style="font-size:11px;color:#6B7280;margin-top:2px;font-weight:600;">${l}</div></div>`).join('');
+
+  document.getElementById('config-tbody').innerHTML=produtos.map(p=>{
+    const realUn=processos.filter(x=>x.empreendimento===p.nome&&(x.status==='Pronto'||x.status==='PE')).length;
+    const meta=p.metaUnidades||0;const pct=meta>0?Math.min((realUn/meta)*100,100):0;
+    const color=pct>=100?'#10B981':pct>=70?'#F59E0B':'#C8102E';
+    const colsAtivas=(esteiraConfigs[p.nome]||[]).filter(c=>c.active).length;
+    return`<tr style="opacity:${p.ativo?1:.6};">
+      <td style="font-weight:700;color:#1A1A2E;">${p.nome}</td>
+      <td>${p.divisao}</td><td>${p.incorporador}</td><td>${p.responsavelAtendimento}</td>
+      <td style="font-weight:700;color:#C8102E;">${formatBRL(p.previsaoVendas)}</td>
+      <td style="font-weight:700;text-align:center;">${meta}</td>
+      <td style="min-width:160px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+          <div style="height:6px;background:#E5E7EB;border-radius:20px;overflow:hidden;flex:1;"><div style="width:${pct}%;height:100%;background:${color};border-radius:20px;"></div></div>
+          <span style="font-size:11px;font-weight:700;color:${color};min-width:28px;">${Math.round(pct)}%</span>
+        </div>
+        <div style="font-size:10px;color:#9CA3AF;">${realUn} un. / ${meta} un. meta</div>
+      </td>
+      <td><button class="btn-sm" onclick="openEsteiraConfigForProd('${p.nome}')">${colsAtivas} colunas</button></td>
+      <td><button onclick="toggleProdAtivo('${p.id}')" style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${p.ativo?'#10B981':'#6B7280'};background:${p.ativo?'rgba(16,185,129,.08)':'rgba(107,114,128,.08)'};color:${p.ativo?'#10B981':'#6B7280'};">${p.ativo?'✓ Ativo':'⏸ Inativo'}</button></td>
+      <td><button class="btn-sm" onclick="editarProduto('${p.id}')">Editar</button></td>
+    </tr>`;
+  }).join('');
+}
+function openEsteiraConfigForProd(nome){
+  const sel=document.getElementById('esteira-config-prod');
+  const ativos=produtos.filter(p=>p.ativo);
+  sel.innerHTML='<option value="">Selecione...</option>'+ativos.map(p=>`<option value="${p.nome}"${p.nome===nome?' selected':''}>${p.nome}</option>`).join('');
+  loadEsteiraConfig(nome);
+  openModal('modal-esteira-config');
+}
+function toggleProdAtivo(id){const p=produtos.find(x=>x.id===id);if(p){p.ativo=!p.ativo;if(p.ativo)ensureEsteiraConfig(p.nome);renderConfig();}}
+let prodStatusAtual=true;
+function toggleProdStatus(){prodStatusAtual=!prodStatusAtual;const btn=document.getElementById('prod-status-btn');btn.textContent=prodStatusAtual?'✓ Ativo':'Inativo';btn.style.borderColor=prodStatusAtual?'#10B981':'#D1D5DB';btn.style.background=prodStatusAtual?'rgba(16,185,129,.07)':'#F9FAFB';btn.style.color=prodStatusAtual?'#10B981':'#6B7280';}
+function editarProduto(id){
+  const p=produtos.find(x=>x.id===id);if(!p)return;
+  document.getElementById('modal-produto-title').textContent='Editar Empreendimento';
+  document.getElementById('prod-submit-btn').textContent='Salvar';
+  document.getElementById('prod-edit-id').value=id;
+  document.getElementById('prod-nome').value=p.nome;
+  document.getElementById('prod-divisao').value=p.divisao;
+  document.getElementById('prod-incorporador').value=p.incorporador;
+  document.getElementById('prod-responsavel').value=p.responsavelAtendimento;
+  document.getElementById('prod-previsao').value=p.previsaoVendas;
+  document.getElementById('prod-meta-unidades').value=p.metaUnidades||0;
+  prodStatusAtual=p.ativo;
+  const btn=document.getElementById('prod-status-btn');btn.textContent=p.ativo?'✓ Ativo':'Inativo';btn.style.borderColor=p.ativo?'#10B981':'#D1D5DB';btn.style.background=p.ativo?'rgba(16,185,129,.07)':'#F9FAFB';btn.style.color=p.ativo?'#10B981':'#6B7280';
+  openModal('modal-novo-produto');
+}
+function salvarProduto(e){
+  e.preventDefault();
+  const editId=document.getElementById('prod-edit-id').value;
+  const dados={nome:document.getElementById('prod-nome').value,divisao:document.getElementById('prod-divisao').value,incorporador:document.getElementById('prod-incorporador').value,responsavelAtendimento:document.getElementById('prod-responsavel').value,previsaoVendas:parseFloat(document.getElementById('prod-previsao').value)||0,metaUnidades:parseInt(document.getElementById('prod-meta-unidades').value)||0,ativo:prodStatusAtual};
+  if(editId){
+    const idx=produtos.findIndex(p=>p.id===editId);
+    if(idx>-1){
+      const oldNome=produtos[idx].nome;
+      produtos[idx]={...produtos[idx],...dados};
+      if(oldNome!==dados.nome){esteiraConfigs[dados.nome]=esteiraConfigs[oldNome]||getDefaultCols();delete esteiraConfigs[oldNome];}
+      if(!esteiraConfigs[dados.nome])esteiraConfigs[dados.nome]=getDefaultCols();
+    }
+  } else{const np={id:genId(),...dados};produtos.push(np);esteiraConfigs[np.nome]=getDefaultCols();}
+  document.getElementById('prod-edit-id').value='';
+  document.getElementById('modal-produto-title').textContent='Novo Empreendimento';
+  document.getElementById('prod-submit-btn').textContent='Cadastrar';
+  document.getElementById('form-produto').reset();prodStatusAtual=true;
+  closeModal('modal-novo-produto');renderConfig();
+}
+// overlayClose handles modal-novo-produto closing via inline onclick
+
+// ══════════════════════════════════════════════════════
+// USUÁRIOS
+// ══════════════════════════════════════════════════════
+function renderUsuarios(){
+  if(!currentUser)return;
+  document.getElementById('user-kpis').innerHTML=[
+    {ic:'👥',l:'Total',v:usuarios.length,c:'#1A1A2E'},
+    {ic:'✅',l:'Ativos',v:usuarios.filter(u=>u.ativo).length,c:'#10B981'},
+    {ic:'🔑',l:'Admins',v:usuarios.filter(u=>u.perfil==='admin').length,c:'#8B5CF6'},
+    {ic:'📋',l:'Gestores',v:usuarios.filter(u=>u.perfil==='gestor').length,c:'#06B6D4'},
+  ].map(k=>`<div class="card" style="padding:16px;"><div style="font-size:20px;">${k.ic}</div><div style="font-size:19px;font-weight:800;color:${k.c};margin-top:5px;">${k.v}</div><div style="font-size:11px;color:#6B7280;margin-top:2px;font-weight:600;">${k.l}</div></div>`).join('');
+  document.getElementById('users-tbody').innerHTML=usuarios.map(u=>`
+    <tr style="opacity:${u.ativo?1:.5};">
+      <td><div style="display:flex;align-items:center;gap:9px;"><div style="width:30px;height:30px;border-radius:50%;background:#C8102E;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:12px;">${u.nome.charAt(0)}</div><span style="font-weight:700;color:#1A1A2E;">${u.login}</span></div></td>
+      <td>${u.nome}</td>
+      <td><span class="role-tag ${PERFIL_RC[u.perfil]}">${PERFIL_ICONS[u.perfil]} ${PERFIL_LABELS[u.perfil]}</span></td>
+      <td style="font-size:12px;color:#374151;">${renderEmpresasBadge(u)}</td>
+      <td style="font-size:12px;color:#6B7280;">${u.ultimoAcesso?elapsed(u.ultimoAcesso)+' atrás':'—'}</td>
+      <td><button onclick="toggleUserAtivo('${u.id}')" style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${u.ativo?'#10B981':'#6B7280'};background:${u.ativo?'rgba(16,185,129,.08)':'rgba(107,114,128,.08)'};color:${u.ativo?'#10B981':'#6B7280'};">${u.ativo?'✓ Ativo':'⏸ Inativo'}</button></td>
+      <td style="display:flex;gap:5px;"><button class="btn-sm" onclick="editarUsuario('${u.id}')">Editar</button>${u.login!=='admin'?`<button class="btn-sm-danger" onclick="excluirUsuario('${u.id}')">Excluir</button>`:''}</td>
+    </tr>`).join('');
+}
+function toggleUserAtivo(id){const u=usuarios.find(x=>x.id===id);if(u&&u.login!=='admin'){u.ativo=!u.ativo;renderUsuarios();}}
+function excluirUsuario(id){if(confirm('Excluir este usuário?')){usuarios=usuarios.filter(u=>u.id!==id);renderUsuarios();}}
+function editarUsuario(id){
+  const u=usuarios.find(x=>x.id===id);if(!u)return;
+  document.getElementById('modal-user-title').textContent='Editar Usuário';
+  document.getElementById('user-submit-btn').textContent='Salvar';
+  document.getElementById('user-edit-id').value=id;
+  document.getElementById('user-nome').value=u.nome;
+  document.getElementById('user-login').value=u.login;
+  document.getElementById('user-senha').value='';
+  document.getElementById('user-perfil').value=u.perfil;
+  populateEmpresasCheckboxes(u.empresas_permitidas||[], u.perfil||'');
+  openModal('modal-novo-usuario');
+}
+function salvarUsuario(e){
+  if(e && e.preventDefault) e.preventDefault();
+  if(e && e.stopPropagation) e.stopPropagation();
+  const editId=document.getElementById('user-edit-id').value;
+  const login=document.getElementById('user-login').value.trim();
+  const senha=document.getElementById('user-senha').value;
+  if(usuarios.find(u=>u.login===login&&u.id!==editId)){alert('Login já em uso.');return}
+  const epSelec=getSelectedEmpresas();
+  const perfilSelec=document.getElementById('user-perfil').value;
+  // Admin/Gestor always get empty array (unrestricted)
+  const finalEp=(perfilSelec==='admin'||perfilSelec==='gestor')?[]:epSelec;
+  if(editId){const u=usuarios.find(x=>x.id===editId);if(u){u.nome=document.getElementById('user-nome').value;u.login=login;if(senha)u.senha=senha;if(u.perfil!=='admin')u.perfil=perfilSelec;u.empresas_permitidas=finalEp;}}
+  else{if(!senha||senha.length<6){alert('Senha mínima de 6 caracteres.');return}usuarios.push({id:genId(),login,senha,nome:document.getElementById('user-nome').value,perfil:perfilSelec,ativo:true,empresas_permitidas:finalEp,ultimoAcesso:null});}
+  // Persist to localStorage when not connected to Supabase
+  if(!SB_MODE){
+    try{localStorage.setItem('lopes_usuarios',JSON.stringify(usuarios.map(u=>({id:u.id,login:u.login,senha:u.senha,nome:u.nome,perfil:u.perfil,ativo:u.ativo,empresas_permitidas:u.empresas_permitidas||[]}))));}
+    catch(e){console.warn('localStorage save failed:',e);}
+  }
+  document.getElementById('user-edit-id').value='';
+  document.getElementById('modal-user-title').textContent='Novo Usuário';
+  document.getElementById('user-submit-btn').textContent='Cadastrar';
+  document.getElementById('form-usuario').reset();
+  closeModal('modal-novo-usuario');renderUsuarios();
+}
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+
+
+
+// ══════════════════════════════════════════════════════════════════════════
+//  SUPABASE INTEGRATION — Lopes Sistema v2.0
+//  Substitui a camada in-memory por persistência real no Supabase
+//  Configuração via painel de setup ou variáveis de ambiente (Netlify)
+// ══════════════════════════════════════════════════════════════════════════
+
+// ── Configuração Supabase ─────────────────────────────────────────────────
+// IMPORTANTE: Preencha com os dados do seu projeto Supabase.
+// No Netlify: defina como variáveis de ambiente e faça build.
+// Para teste direto: edite os valores abaixo.
+// ── Supabase credentials — resolved at runtime ──────────────────────────
+// Priority: 1) Netlify build injection (VITE_SUPABASE_URL placeholder)
+//           2) localStorage saved config
+//           3) window global (set by build script)
+//           4) empty → show setup screen
+// Netlify build script replaces the string literals below at deploy time.
+let SUPABASE_URL  = 'https://lirppglrqazigjkkpynp.supabase.co';
+let SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc2luInR5cCI6IkpXVCJ9.eyJpc2luInR5cCI6IkpXVCJ9.eyJpc2luInR5cCI6IkpXVCJ9.eyJpc2luInR5cCI6IkpXVCJ9.eyJpc2luInR5cCI6IkpXVCJ9';
+
+// Strip placeholder markers if not replaced by build (fallback to empty)
+if (SUPABASE_URL.startsWith('%%'))  SUPABASE_URL  = '';
+if (SUPABASE_ANON.startsWith('%%')) SUPABASE_ANON = '';
+
+let sb = null;      // Supabase client instance
+let SB_MODE = false; // true when Supabase is connected
+
+// ── Init Supabase ─────────────────────────────────────────────────────────
+function initSupabase(url, anon) {
+  // Accept explicit params (from env/localStorage) or fall back to module-level vars
+  const u = (url  || SUPABASE_URL  || '').trim();
+  const k = (anon || SUPABASE_ANON || '').trim();
+  if (!u || !u.startsWith('https://') || !k || k.length < 20) {
+    console.warn('[Supabase] Credenciais ausentes ou inválidas — modo demo ativo');
+    return false;
+  }
+  // Update module-level vars so the rest of the code uses them
+  SUPABASE_URL  = u;
+  SUPABASE_ANON = k;
+  try {
+    sb = window.supabase.createClient(u, k, {
+      auth: { persistSession: true, autoRefreshToken: true, storageKey: 'lopes_sb_session' },
+    });
+    console.log('[Supabase] Cliente inicializado:', u);
+    return true;
+  } catch(e) {
+    console.error('[Supabase] Falha ao inicializar:', e.message);
+    return false;
+  }
+}
+
+// ── Supabase helpers ──────────────────────────────────────────────────────
+async function sbGet(table, filters={}, order=null) {
+  let q = sb.from(table).select('*');
+  Object.entries(filters).forEach(([k,v]) => { q = q.eq(k, v); });
+  if (order) q = q.order(order.col, { ascending: order.asc !== false });
+  const { data, error } = await q;
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+async function sbInsert(table, row) {
+  const { data, error } = await sb.from(table).insert(row).select().single();
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+async function sbUpdate(table, id, updates) {
+  const { data, error } = await sb.from(table).update(updates).eq('id', id).select().single();
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+async function sbDelete(table, id) {
+  const { error } = await sb.from(table).delete().eq('id', id);
+  if (error) throw new Error(error.message);
+}
+
+// ── Loading overlay ───────────────────────────────────────────────────────
+function showLoading(msg='Carregando...') {
+  let el = document.getElementById('sb-loading');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'sb-loading';
+    el.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(26,26,46,.72);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;';
+    el.innerHTML = `
+      <div style="width:44px;height:44px;border:4px solid rgba(200,16,46,.3);border-top-color:#C8102E;border-radius:50%;animation:spin .8s linear infinite;"></div>
+      <div id="sb-loading-msg" style="color:#fff;font-size:14px;font-weight:600;">${msg}</div>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
+    document.body.appendChild(el);
+  }
+  document.getElementById('sb-loading-msg').textContent = msg;
+  el.style.display = 'flex';
+}
+function hideLoading() {
+  const el = document.getElementById('sb-loading');
+  if (el) el.style.display = 'none';
+}
+
+// ── Toast notifications ───────────────────────────────────────────────────
+function toast(msg, type='success') {
+  const colors = { success:'#10B981', error:'#EF4444', info:'#3B82F6', warn:'#F59E0B' };
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:99998;padding:12px 20px;border-radius:10px;background:${colors[type]||colors.info};color:#fff;font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2);animation:slideUp .25s ease;max-width:320px;`;
+  t.textContent = msg;
+  const style = document.createElement('style');
+  style.textContent = '@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}';
+  document.head.appendChild(style);
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// ══════════════════════════════════════════════════════
+// SUPABASE AUTH — Login / Logout / Session Restore
+// ══════════════════════════════════════════════════════
+async function doLogin() {
+  if (!SB_MODE) { doLoginLocal(); return; }
+
+  const loginVal = document.getElementById('li-user').value.trim();
+  const senhaVal = document.getElementById('li-pass').value;
+  const errEl    = document.getElementById('login-error');
+  errEl.style.display = 'none';
+
+  if (!loginVal || !senhaVal) {
+    errEl.textContent = 'Preencha usuário e senha.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  showLoading('Autenticando...');
+  try {
+    // Query usuarios table by login
+    const { data: users, error } = await sb
+      .from('usuarios')
+      .select('*')
+      .eq('login', loginVal)
+      .eq('ativo', true)
+      .limit(1);
+
+    if (error) throw new Error(error.message);
+    if (!users || users.length === 0) throw new Error('Usuário ou senha incorretos');
+
+    const user = users[0];
+
+    // Verify password using Supabase auth OR bcrypt check via edge function
+    // For simplicity: use Supabase Auth with email derived from login
+    const emailAlias = `${loginVal}@lopes.sistema`;
+    const { data: authData, error: authError } = await sb.auth.signInWithPassword({
+      email: emailAlias,
+      password: senhaVal,
+    });
+
+    if (authError) throw new Error('Usuário ou senha incorretos');
+
+    // Update last access
+    await sb.from('usuarios').update({ ultimo_acesso: new Date().toISOString() }).eq('id', user.id);
+
+    currentUser = {
+      id: user.id, login: user.login, nome: user.nome,
+      perfil: user.perfil, ativo: user.ativo,
+      empresas_permitidas: user.empresas_permitidas || [],
+      ultimoAcesso: new Date(),
+    };
+
+    errEl.style.display = 'none';
+    await syncAllFromSupabase();
+    hideLoading();
+
+    const p = currentUser.perfil;
+    if (p === 'admin' || p === 'gestor') { currentEmp = null; enterSystem(); }
+    else showSelectEmp();
+
+  } catch(e) {
+    hideLoading();
+    errEl.textContent = e.message || 'Erro de autenticação';
+    errEl.style.display = 'block';
+  }
+}
+
+// Fallback login local (modo demo sem Supabase)
+function doLoginLocal() {
+  const loginVal = document.getElementById('li-user').value.trim();
+  const senhaVal = document.getElementById('li-pass').value;
+  const errEl    = document.getElementById('login-error');
+  const user     = usuarios.find(u => u.login === loginVal && u.senha === senhaVal && u.ativo);
+  if (!user) { errEl.style.display = 'block'; return; }
+  errEl.style.display = 'none';
+  currentUser = user;
+  user.ultimoAcesso = new Date();
+  const p = user.perfil;
+  if (p === 'admin' || p === 'gestor') { currentEmp = null; enterSystem(); }
+  else showSelectEmp();
+}
+
+async function doLogout() {
+  if (SB_MODE) {
+    showLoading('Saindo...');
+    try { await sb.auth.signOut(); } catch(e) {}
+    hideLoading();
+  }
+  currentUser = null; currentEmp = null;
+  const _pfp = document.getElementById('perf-filter-prod'); if (_pfp) { _pfp.value = ''; _pfp.disabled = false; }
+  const _pfe = document.getElementById('perf-filter-emp');  if (_pfe) _pfe.value = '';
+  const _js  = document.getElementById('jur-search');       if (_js)  _js.value  = '';
+  document.getElementById('screen-system').style.display = 'none';
+  document.getElementById('screen-select').classList.remove('active');
+  const sl = document.getElementById('screen-login');
+  sl.style.display = ''; sl.classList.add('active');
+  document.getElementById('li-user').value = '';
+  document.getElementById('li-pass').value = '';
+  document.getElementById('login-error').style.display = 'none';
+}
+
+// ══════════════════════════════════════════════════════
+// SUPABASE DATA SYNC
+// ══════════════════════════════════════════════════════
+async function syncAllFromSupabase() {
+  showLoading('Sincronizando dados...');
+  try {
+    // 1. Empreendimentos
+    const emps = await sbGet('empreendimentos', {}, { col: 'nome', asc: true });
+    produtos = emps.map(e => ({
+      id: e.id, nome: e.nome, incorporador: e.incorporador,
+      responsavelAtendimento: e.responsavel_atendimento,
+      previsaoVendas: e.previsao_vendas, metaUnidades: e.meta_unidades,
+      divisao: e.divisao, ativo: e.ativo,
+    }));
+
+    // 2. Esteira configs
+    const allCols = await sbGet('esteira_configs', {}, { col: 'sort_order', asc: true });
+    esteiraConfigs = {};
+    produtos.forEach(p => {
+      const cols = allCols.filter(c => c.empreendimento_id === p.id);
+      esteiraConfigs[p.nome] = cols.length
+        ? cols.map(c => ({ key: c.col_key, label: c.col_label, type: c.col_type, opts: c.col_opts || [], active: c.active, isCustom: c.is_custom }))
+        : getDefaultCols();
+    });
+
+    // 3. Processos (scoped by currentEmp if restricted)
+    let procQuery = sb.from('processos').select('*, empreendimentos(nome)');
+    if (currentEmp) {
+      const emp = produtos.find(p => p.nome === currentEmp);
+      if (emp) procQuery = procQuery.eq('empreendimento_id', emp.id);
+    }
+    // Only active empreendimentos
+    const activeIds = produtos.filter(p => p.ativo).map(p => p.id);
+    procQuery = procQuery.in('empreendimento_id', activeIds).order('criado_em', { ascending: false });
+    const { data: procs, error: procError } = await procQuery;
+    if (procError) throw new Error(procError.message);
+
+    processos = (procs || []).map(p => ({
+      id: p.id,
+      empreendimento: p.empreendimentos?.nome || p.empreendimento_id,
+      pv: p.pv, tipologia: p.tipologia, emTempo: p.em_tempo,
+      analise: p.analise, torre: p.torre, unidade: p.unidade,
+      vgv: p.vgv, corretor: p.corretor, supervisor: p.supervisor,
+      diretoria: p.diretoria, empresa: p.empresa, cliente: p.cliente,
+      pendencia: p.pendencia, status: p.status,
+      ...(p.campos_extras || {}),
+    }));
+
+    // 4. Usuarios (admin only)
+    if (currentUser?.perfil === 'admin') {
+      const usrs = await sbGet('usuarios', {}, { col: 'nome', asc: true });
+      usuarios = usrs.map(u => ({
+        id: u.id, login: u.login, senha: '●●●●●●', nome: u.nome,
+        perfil: u.perfil, ativo: u.ativo,
+        empresas_permitidas: u.empresas_permitidas || [],
+        ultimoAcesso: u.ultimo_acesso ? new Date(u.ultimo_acesso) : null,
+      }));
+    }
+
+    console.log(`[Supabase] Sync: ${produtos.length} empreend., ${processos.length} processos`);
+    toast(`Dados sincronizados — ${processos.length} processos`, 'success');
+  } catch(e) {
+    console.error('[Supabase] Sync error:', e.message);
+    toast('Erro ao sincronizar dados: ' + e.message, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// SUPABASE WRITE OPERATIONS (patch existing functions)
+// ══════════════════════════════════════════════════════
+
+// ── updateCell → persiste no Supabase ────────────────────────────────────
+function updateCell(rowId, key, value) {
+  _updateCellLocal(rowId, key, value); // update local state + KPIs
+  if (!SB_MODE) return;
+  const fieldMap = { emTempo: 'em_tempo', camposExtras: 'campos_extras' };
+  const col = fieldMap[key] || key;
+  const payload = { [col]: key === 'vgv' ? parseBRL(value) : value, atualizado_em: new Date().toISOString() };
+  sbUpdate('processos', rowId, payload).catch(e => {
+    toast('Falha ao salvar: ' + e.message, 'error');
+    console.error('[Supabase] updateCell:', e.message);
+  });
+}
+
+// ── addProcessoRow já definida com suporte Supabase na linha acima ──────
+
+async function _addProcessoRowSupabase() {
+  let empNome = currentEmp;
+  if (!empNome) {
+    const ativos = produtos.filter(p => p.ativo);
+    if (!ativos.length) { alert('Nenhum empreendimento ativo.'); return; }
+    if (ativos.length === 1) { empNome = ativos[0].nome; }
+    else {
+      const escolha = prompt('Informe o empreendimento:\n\n' +
+        ativos.map((p, i) => `${i+1}. ${p.nome}`).join('\n') + '\n\nDigite o nome exato:');
+      if (!escolha) return;
+      const found = ativos.find(p => p.nome.toLowerCase() === escolha.trim().toLowerCase());
+      if (!found) { alert('Empreendimento não encontrado.'); return; }
+      empNome = found.nome;
+    }
+  }
+  const empObj = produtos.find(p => p.nome === empNome);
+  if (!empObj) { _addProcessoRowLocal(); return; }
+  try {
+    showLoading('Adicionando processo...');
+    const now = new Date().toISOString();
+    const newProc = await sbInsert('processos', {
+      empreendimento_id: empObj.id, tipologia: 'RV', em_tempo: 'SIM',
+      analise: 'Em Análise', status: 'Validação', vgv: 0,
+      campos_extras: {}, criado_em: now, atualizado_em: now,
+    });
+    processos.push({
+      id: newProc.id, empreendimento: empNome,
+      pv: '', tipologia: 'RV', emTempo: 'SIM', analise: 'Em Análise',
+      torre: '', unidade: '', vgv: 0, corretor: '', supervisor: '',
+      diretoria: '', empresa: 'Lopes SP', cliente: '', pendencia: '',
+      status: 'Validação',
+    });
+    hideLoading();
+    renderEsteira();
+    setTimeout(() => {
+      const tb = document.getElementById('esteira-tbody');
+      if (tb) { const last = tb.lastElementChild; if (last) last.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+    }, 100);
+  } catch(e) {
+    hideLoading();
+    toast('Erro ao adicionar processo: ' + e.message, 'error');
+    _addProcessoRowLocal(); // fallback
+  }
+}
+
+// ── deleteRow → persiste no Supabase ─────────────────────────────────────
+function deleteRow(rowId) {
+  if (!SB_MODE) { _deleteRowLocal(rowId); return; }
+  if (!confirm('Remover este processo?')) return;
+  sbDelete('processos', rowId).then(() => {
+    processos = processos.filter(r => r.id !== rowId);
+    renderEsteira();
+    toast('Processo removido', 'info');
+  }).catch(e => {
+    toast('Erro ao remover: ' + e.message, 'error');
+  });
+}
+
+// ── salvarProduto → persiste no Supabase ─────────────────────────────────
+const _salvarProduto_orig = salvarProduto;
+async function salvarProduto(e) {
+  if (!SB_MODE) { _salvarProduto_orig(e); return; }
+  e.preventDefault();
+  const editId = document.getElementById('prod-edit-id').value;
+  const dados = {
+    nome: document.getElementById('prod-nome').value,
+    divisao: document.getElementById('prod-divisao').value,
+    incorporador: document.getElementById('prod-incorporador').value,
+    responsavel_atendimento: document.getElementById('prod-responsavel').value,
+    previsao_vendas: parseFloat(document.getElementById('prod-previsao').value) || 0,
+    meta_unidades: parseInt(document.getElementById('prod-meta-unidades').value) || 0,
+    ativo: prodStatusAtual,
+    atualizado_em: new Date().toISOString(),
+  };
+  try {
+    showLoading('Salvando empreendimento...');
+    if (editId) {
+      const updated = await sbUpdate('empreendimentos', editId, dados);
+      const idx = produtos.findIndex(p => p.id === editId);
+      if (idx > -1) produtos[idx] = { ...produtos[idx], ...{ nome: dados.nome, incorporador: dados.incorporador, responsavelAtendimento: dados.responsavel_atendimento, previsaoVendas: dados.previsao_vendas, metaUnidades: dados.meta_unidades, divisao: dados.divisao, ativo: dados.ativo } };
+    } else {
+      const now = new Date().toISOString();
+      const created = await sbInsert('empreendimentos', { ...dados, criado_em: now });
+      produtos.push({ id: created.id, nome: dados.nome, incorporador: dados.incorporador, responsavelAtendimento: dados.responsavel_atendimento, previsaoVendas: dados.previsao_vendas, metaUnidades: dados.meta_unidades, divisao: dados.divisao, ativo: dados.ativo });
+      ensureEsteiraConfig(dados.nome);
+      // Seed default cols in Supabase
+      const cols = getDefaultCols();
+      for (let i = 0; i < cols.length; i++) {
+        await sbInsert('esteira_configs', { empreendimento_id: created.id, col_key: cols[i].key, col_label: cols[i].label, col_type: cols[i].type, col_opts: cols[i].opts, active: cols[i].active, sort_order: i, is_custom: false });
+      }
+    }
+    hideLoading();
+    document.getElementById('prod-edit-id').value = '';
+    document.getElementById('modal-produto-title').textContent = 'Novo Empreendimento';
+    document.getElementById('prod-submit-btn').textContent = 'Cadastrar';
+    document.getElementById('form-produto').reset();
+    prodStatusAtual = true;
+    closeModal('modal-novo-produto');
+    renderConfig();
+    toast('Empreendimento salvo!', 'success');
+  } catch(e) {
+    hideLoading();
+    toast('Erro ao salvar: ' + e.message, 'error');
+  }
+}
+
+// ── toggleProdAtivo → persiste no Supabase ────────────────────────────────
+const _toggleProdAtivo_orig = toggleProdAtivo;
+function toggleProdAtivo(id) {
+  const p = produtos.find(x => x.id === id);
+  if (!p) return;
+  p.ativo = !p.ativo;
+  if (p.ativo) ensureEsteiraConfig(p.nome);
+  if (SB_MODE) {
+    sbUpdate('empreendimentos', id, { ativo: p.ativo }).catch(e => toast('Erro: ' + e.message, 'error'));
+  }
+  renderConfig();
+}
+
+// ── saveEsteiraConfig → persiste no Supabase ─────────────────────────────
+const _saveEsteiraConfig_orig = saveEsteiraConfig;
+async function saveEsteiraConfig() {
+  if (!SB_MODE) { _saveEsteiraConfig_orig(); return; }
+  const nomeProd = document.getElementById('esteira-config-prod').value;
+  if (!nomeProd) { closeModal('modal-esteira-config'); return; }
+  const empObj = produtos.find(p => p.nome === nomeProd);
+  if (!empObj) { closeModal('modal-esteira-config'); return; }
+  const cols = esteiraConfigs[nomeProd] || [];
+  try {
+    showLoading('Salvando esteira...');
+    // Delete existing and reinsert (upsert)
+    await sb.from('esteira_configs').delete().eq('empreendimento_id', empObj.id);
+    for (let i = 0; i < cols.length; i++) {
+      const c = cols[i];
+      await sbInsert('esteira_configs', { empreendimento_id: empObj.id, col_key: c.key, col_label: c.label, col_type: c.type, col_opts: c.opts || [], active: c.active, sort_order: i, is_custom: c.isCustom || false });
+    }
+    hideLoading();
+    closeModal('modal-esteira-config');
+    renderEsteira();
+    toast('Esteira salva!', 'success');
+  } catch(e) {
+    hideLoading();
+    toast('Erro ao salvar esteira: ' + e.message, 'error');
+  }
+}
+
+// ── salvarUsuario → persiste no Supabase ─────────────────────────────────
+const _salvarUsuario_orig = salvarUsuario;
+async function salvarUsuario(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  if (e && e.stopPropagation) e.stopPropagation();
+  if (!SB_MODE) { _salvarUsuario_orig(e); return; }
+  const editId = document.getElementById('user-edit-id').value;
+  const login  = document.getElementById('user-login').value.trim();
+  const senha  = document.getElementById('user-senha').value;
+  const nome   = document.getElementById('user-nome').value;
+  const perfil = document.getElementById('user-perfil').value;
+  const epSelec = getSelectedEmpresas();
+  // Admin/Gestor always unrestricted (empty array)
+  const finalEpSb = (perfil === 'admin' || perfil === 'gestor') ? [] : epSelec;
+
+  if (usuarios.find(u => u.login === login && u.id !== editId)) { alert('Login já em uso.'); return; }
+
+  try {
+    showLoading('Salvando usuário...');
+    const emailAlias = `${login}@lopes.sistema`;
+    if (editId) {
+      const updates = { login, nome, empresas_permitidas: finalEpSb, atualizado_em: new Date().toISOString() };
+      const u = usuarios.find(x => x.id === editId);
+      if (u && u.perfil !== 'admin') updates.perfil = perfil;
+      await sbUpdate('usuarios', editId, updates);
+      if (senha) {
+        // Update auth password via admin API (requires service role — skip in client mode)
+        toast('Senha só pode ser alterada pelo Admin no painel Supabase', 'warn');
+      }
+      const idx = usuarios.findIndex(x => x.id === editId);
+      if (idx > -1) Object.assign(usuarios[idx], { login, nome, empresas_permitidas: finalEpSb, ...( u?.perfil !== 'admin' ? { perfil } : {}) });
+    } else {
+      if (!senha || senha.length < 6) { hideLoading(); alert('Senha mínima de 6 caracteres.'); return; }
+      // Create auth user
+      const { data: authData, error: authErr } = await sb.auth.admin?.createUser({
+        email: emailAlias, password: senha, email_confirm: true,
+      });
+      // If admin API not available, create via signUp
+      if (authErr || !authData) {
+        const { data: signUpData, error: signUpErr } = await sb.auth.signUp({ email: emailAlias, password: senha });
+        if (signUpErr) throw new Error(signUpErr.message);
+        const authId = signUpData.user?.id || crypto.randomUUID();
+        const now = new Date().toISOString();
+        const created = await sbInsert('usuarios', { id: authId, login, nome, perfil, ativo: true, empresas_permitidas: finalEpSb, criado_em: now, atualizado_em: now });
+        usuarios.push({ id: created.id, login, nome, perfil, ativo: true, empresas_permitidas: finalEpSb, senha: '●●●●●●', ultimoAcesso: null });
+      }
+    }
+    hideLoading();
+    document.getElementById('user-edit-id').value = '';
+    document.getElementById('modal-user-title').textContent = 'Novo Usuário';
+    document.getElementById('user-submit-btn').textContent = 'Cadastrar';
+    document.getElementById('form-usuario').reset();
+    closeModal('modal-novo-usuario');
+    renderUsuarios();
+    toast('Usuário salvo!', 'success');
+  } catch(e) {
+    hideLoading();
+    toast('Erro ao salvar usuário: ' + e.message, 'error');
+  }
+}
+
+// ── toggleUserAtivo → persiste no Supabase ───────────────────────────────
+const _toggleUserAtivo_orig = toggleUserAtivo;
+function toggleUserAtivo(id) {
+  const u = usuarios.find(x => x.id === id);
+  if (u && u.login !== 'admin') {
+    u.ativo = !u.ativo;
+    if (SB_MODE) sbUpdate('usuarios', id, { ativo: u.ativo }).catch(e => toast('Erro: ' + e.message, 'error'));
+    renderUsuarios();
+  }
+}
+
+// ── excluirUsuario → persiste no Supabase ────────────────────────────────
+const _excluirUsuario_orig = excluirUsuario;
+function excluirUsuario(id) {
+  if (!confirm('Excluir este usuário?')) return;
+  if (SB_MODE) {
+    sbDelete('usuarios', id).then(() => {
+      usuarios = usuarios.filter(u => u.id !== id);
+      renderUsuarios();
+      toast('Usuário excluído', 'info');
+    }).catch(e => toast('Erro: ' + e.message, 'error'));
+  } else {
+    usuarios = usuarios.filter(u => u.id !== id);
+    renderUsuarios();
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// SETUP SCREEN — exibida quando Supabase não configurado
+// ══════════════════════════════════════════════════════
+function showSetupScreen() {
+  const existing = document.getElementById('screen-setup');
+  if (existing) { existing.style.display = 'flex'; return; }
+
+  const div = document.createElement('div');
+  div.id = 'screen-setup';
+  div.style.cssText = 'position:fixed;inset:0;z-index:99000;background:#0E0E1E;display:flex;align-items:center;justify-content:center;padding:20px;';
+  div.innerHTML = `
+    <div style="background:#1A1A2E;border-radius:20px;border:1px solid rgba(255,255,255,.1);padding:40px;width:100%;max-width:560px;box-shadow:0 32px 80px rgba(0,0,0,.5);">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;">
+        <div style="width:44px;height:44px;background:#C8102E;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;">L</div>
+        <div>
+          <div style="font-size:18px;font-weight:800;color:#fff;">Configuração Inicial</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.4);">Conecte ao Supabase para começar</div>
+        </div>
+      </div>
+      <div style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);border-radius:10px;padding:14px;margin-bottom:24px;">
+        <div style="font-size:12px;color:#93C5FD;line-height:1.6;">
+          📋 <strong>Como obter as credenciais:</strong><br>
+          1. Acesse <strong>supabase.com</strong> → seu projeto<br>
+          2. Vá em <strong>Settings → API</strong><br>
+          3. Copie a <strong>Project URL</strong> e a chave <strong>anon/public</strong>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:11px;font-weight:700;color:rgba(255,255,255,.45);margin-bottom:6px;letter-spacing:.8px;text-transform:uppercase;">Supabase Project URL</label>
+        <input id="setup-url" type="text" placeholder="https://xxxxxxxxxxxx.supabase.co"
+          style="width:100%;padding:12px 14px;border-radius:9px;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:#fff;font-size:14px;outline:none;"
+          value="${(SUPABASE_URL && SUPABASE_URL.startsWith('https://')) ? SUPABASE_URL : (localStorage.getItem('lopes_sb_url')||'')}">
+      </div>
+      <div style="margin-bottom:24px;">
+        <label style="display:block;font-size:11px;font-weight:700;color:rgba(255,255,255,.45);margin-bottom:6px;letter-spacing:.8px;text-transform:uppercase;">Supabase Anon Key</label>
+        <input id="setup-key" type="text" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          style="width:100%;padding:12px 14px;border-radius:9px;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:#fff;font-size:14px;outline:none;"
+          value="${(SUPABASE_ANON && SUPABASE_ANON.length > 20) ? SUPABASE_ANON : (localStorage.getItem('lopes_sb_anon')||'')}">
+      </div>
+      <button onclick="applySetupConfig()" style="width:100%;padding:14px;border-radius:10px;border:none;background:#C8102E;color:#fff;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 6px 20px rgba(200,16,46,.4);">
+        Conectar ao Supabase →
+      </button>
+      <button onclick="useDemoMode()" style="width:100%;padding:12px;margin-top:10px;border-radius:10px;border:1.5px solid rgba(255,255,255,.15);background:transparent;color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;">
+        Continuar sem Supabase (modo demo)
+      </button>
+      <div id="setup-error" style="display:none;margin-top:14px;padding:10px 14px;background:rgba(200,16,46,.15);border:1px solid rgba(200,16,46,.35);border-radius:8px;font-size:13px;color:#FCA5A5;"></div>
+    </div>`;
+  document.body.appendChild(div);
+}
+
+async function applySetupConfig() {
+  const url = document.getElementById('setup-url').value.trim();
+  const key = document.getElementById('setup-key').value.trim();
+  const errEl = document.getElementById('setup-error');
+  errEl.style.display = 'none';
+
+  if (!url || !url.startsWith('https://')) { errEl.textContent = 'URL inválida. Use o formato https://xxxx.supabase.co'; errEl.style.display = 'block'; return; }
+  if (!key || key.length < 20) { errEl.textContent = 'Chave Anon inválida.'; errEl.style.display = 'block'; return; }
+
+  // Save to localStorage for next session
+  localStorage.setItem('lopes_sb_url', url);
+  localStorage.setItem('lopes_sb_anon', key);
+
+  // Init Supabase with new credentials
+  SB_MODE = initSupabase(url, key);
+  if (!SB_MODE) {
+    errEl.textContent = 'Falha ao inicializar o cliente Supabase. Verifique as credenciais.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  try {
+    // Test connection — also verifies the tables exist
+    const { error } = await sb.from('usuarios').select('id').limit(1);
+    if (error) throw new Error('Tabelas não encontradas. Execute o script supabase-setup.sql primeiro.');
+    document.getElementById('screen-setup').style.display = 'none';
+    showLoginScreen();
+    toast('Supabase conectado com sucesso!', 'success');
+  } catch(e) {
+    SB_MODE = false; sb = null;
+    errEl.textContent = e.message;
+    errEl.style.display = 'block';
+  }
+}
+
+function useDemoMode() {
+  document.getElementById('screen-setup').style.display = 'none';
+  showLoginScreen();
+}
+
+function showLoginScreen() {
+  const sl = document.getElementById('screen-login');
+  if (sl) { sl.style.display = ''; sl.classList.add('active'); }
+  updateLoginStats();
+}
+
+function updateLoginStats() {
+  document.getElementById('ls-proc').textContent = processos.length;
+  document.getElementById('ls-emp').textContent  = produtos.filter(p => p.ativo).length;
+  const _vgv = processos.reduce((s, r) => s + (r.vgv || 0), 0);
+  document.getElementById('ls-vgv').textContent = 'R$' + (_vgv >= 1000000 ? Math.round(_vgv / 1000000) + 'M' : Math.round(_vgv / 1000) + 'K');
+}
+
+// ══════════════════════════════════════════════════════
+// EMPRESA FILTER HELPERS
+// ══════════════════════════════════════════════════════
+
+function renderEmpresasBadge(u) {
+  const ep = u.empresas_permitidas || [];
+  const perfil = u.perfil || '';
+  if (!ep.length || perfil === 'admin' || perfil === 'gestor') {
+    return `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;background:#F0FDF4;border:1px solid #BBF7D0;color:#166534;font-size:11px;font-weight:700;">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Todas
+    </span>`;
+  }
+  const visible = ep.slice(0, 2);
+  const extra   = ep.length - 2;
+  return visible.map(e =>
+    `<span style="display:inline-block;padding:2px 7px;border-radius:4px;background:#EFF6FF;border:1px solid #BFDBFE;color:#1E40AF;font-size:10px;font-weight:700;margin:1px 2px 1px 0;">${e}</span>`
+  ).join('') + (extra > 0
+    ? `<span style="display:inline-block;padding:2px 7px;border-radius:4px;background:#F3F4F6;border:1px solid #E5E7EB;color:#6B7280;font-size:10px;font-weight:700;margin:1px;">+${extra}</span>`
+    : '');
+}
+
+function buildEmpresaBadgeHtml() {
+  if (!currentUser) return '';
+  const ep = getEmpresasPermitidas();
+  if (ep.length === 0) return '';
+  const label = ep.length <= 2 ? ep.join(', ') : ep.slice(0,2).join(', ') + ` +${ep.length-2}`;
+  return `<span style="background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.3);border-radius:6px;padding:3px 9px;font-size:10px;font-weight:700;color:#93C5FD;white-space:nowrap;" title="Empresas: ${ep.join(', ')}">🏷️ ${label}</span>`;
+}
+
+function populateEmpresasCheckboxes(selected=[], perfil='') {
+  const grid     = document.getElementById('user-empresas-grid');
+  const banner   = document.getElementById('user-empresas-all-banner');
+  const chkWrap  = document.getElementById('user-empresas-checkboxes-wrap');
+  if (!grid) return;
+
+  // Admin/Gestor → show "acesso total" banner, hide checkboxes
+  const isUnrestricted = (perfil === 'admin' || perfil === 'gestor');
+  if (banner)  banner.style.display  = isUnrestricted ? 'flex' : 'none';
+  if (chkWrap) chkWrap.style.display = isUnrestricted ? 'none' : 'block';
+
+  if (isUnrestricted) { grid.innerHTML = ''; return; }
+
+  // Build empresa list from active produtos + EMPRESAS constant (union)
+  const activeEmps = produtos
+    .filter(p => p.ativo)
+    .map(p => p.nome)
+    .filter(Boolean);
+  // Also include fixed EMPRESAS list (for the empresa field in processos)
+  const allEmps = [...new Set([...EMPRESAS, ...activeEmps])];
+
+  grid.innerHTML = allEmps.map(emp => {
+    const isChecked = selected.includes(emp);
+    const id = `emp-chk-${emp.replace(/[^a-zA-Z0-9]/g,'_')}`;
+    return `<label for="${id}"
+      style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:9px;
+             border:1.5px solid ${isChecked?'#2563EB':'#E5E7EB'};
+             background:${isChecked?'rgba(37,99,235,.06)':'#FAFAFA'};
+             cursor:pointer;font-size:13px;font-weight:600;color:#374151;
+             transition:all .15s;user-select:none;"
+      onclick="toggleEmpresaChk(this,'${emp}')">
+      <input type="checkbox" id="${id}" data-emp="${emp}"
+             ${isChecked?'checked':''} style="display:none;">
+      <span class="chk-box-visual" style="
+        width:17px;height:17px;border-radius:4px;flex-shrink:0;
+        border:2px solid ${isChecked?'#2563EB':'#D1D5DB'};
+        background:${isChecked?'#2563EB':'transparent'};
+        display:flex;align-items:center;justify-content:center;">
+        ${isChecked?'<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}
+      </span>
+      ${emp}
+    </label>`;
+  }).join('');
+}
+
+// Called when perfil dropdown changes
+function onUserPerfilChange(perfil) {
+  const editId = document.getElementById('user-edit-id').value;
+  const existing = editId
+    ? (usuarios.find(u => u.id === editId)?.empresas_permitidas || [])
+    : [];
+  populateEmpresasCheckboxes(existing, perfil);
+}
+
+function toggleEmpresaChk(label, emp) {
+  const inp = label.querySelector('input[type=checkbox]');
+  inp.checked = !inp.checked;
+  const checked = inp.checked;
+  label.style.borderColor = checked ? '#2563EB' : '#E5E7EB';
+  label.style.background  = checked ? 'rgba(37,99,235,.06)' : '#fff';
+  const box = label.querySelector('.chk-box-visual');
+  box.style.borderColor  = checked ? '#2563EB' : '#D1D5DB';
+  box.style.background   = checked ? '#2563EB' : 'transparent';
+  box.innerHTML = checked ? '<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>' : '';
+}
+
+function selectAllEmpresas() {
+  document.querySelectorAll('#user-empresas-grid input[type=checkbox]').forEach(inp => {
+    if (!inp.checked) toggleEmpresaChk(inp.closest('label'), inp.value);
+  });
+}
+function clearAllEmpresas() {
+  document.querySelectorAll('#user-empresas-grid input[type=checkbox]').forEach(inp => {
+    if (inp.checked) toggleEmpresaChk(inp.closest('label'), inp.value);
+  });
+}
+function getSelectedEmpresas() {
+  const boxes = document.querySelectorAll('#user-empresas-grid input[type=checkbox]');
+  return Array.from(boxes).filter(b => b.checked).map(b => b.dataset.emp || b.value);
+}
+
+// Reset empresa checkboxes when opening new user modal
+document.addEventListener('click', e => {
+  const btn = e.target.closest('button');
+  if (btn && btn.textContent && btn.textContent.trim() === '+ Novo Usuário') {
+    setTimeout(() => {
+      document.getElementById('user-perfil').value = '';
+      // Start with blank + hidden (no perfil selected yet)
+      const banner  = document.getElementById('user-empresas-all-banner');
+      const chkWrap = document.getElementById('user-empresas-checkboxes-wrap');
+      const grid    = document.getElementById('user-empresas-grid');
+      if (banner)  banner.style.display  = 'none';
+      if (chkWrap) chkWrap.style.display = 'none';
+      if (grid)    grid.innerHTML = '';
+    }, 50);
+  }
+});
+
+// ══════════════════════════════════════════════════════
+// INIT — DOMContentLoaded
+// Priority order for Supabase credentials:
+//   1. Netlify env vars injected at build time (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY)
+//   2. localStorage (saved from previous manual setup)
+//   3. Show setup screen for manual entry
+// ══════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', async () => {
+
+  // ── Step 0: Load persisted usuarios from localStorage (offline/demo mode) ──
+  try {
+    const lsUsers = localStorage.getItem('lopes_usuarios');
+    if (lsUsers) {
+      const parsed = JSON.parse(lsUsers);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        // Merge into in-memory usuarios (keep passwords from demo data if not stored)
+        parsed.forEach(stored => {
+          const idx = usuarios.findIndex(u => u.id === stored.id || u.login === stored.login);
+          if (idx > -1) {
+            usuarios[idx] = {
+              ...usuarios[idx],
+              nome: stored.nome,
+              perfil: stored.perfil,
+              ativo: stored.ativo,
+              empresas_permitidas: stored.empresas_permitidas || [],
+              ...(stored.senha && !stored.senha.startsWith('●') ? { senha: stored.senha } : {})
+            };
+          } else {
+            usuarios.push({ ...stored, empresas_permitidas: stored.empresas_permitidas || [] });
+          }
+        });
+        console.log('[localStorage] Loaded', parsed.length, 'usuarios');
+      }
+    }
+  } catch(e) { console.warn('[localStorage] Failed to load usuarios:', e); }
+
+  // ── Step 1: Resolve credentials from all sources ──────────────────────
+  // At this point SUPABASE_URL / SUPABASE_ANON are already set if
+  // the Netlify build script injected them (placeholders replaced).
+  // Now also check localStorage for credentials saved manually.
+  const lsUrl  = localStorage.getItem('lopes_sb_url')  || '';
+  const lsAnon = localStorage.getItem('lopes_sb_anon') || '';
+
+  // Prefer build-time env vars; fall back to localStorage
+  const resolvedUrl  = (SUPABASE_URL  && SUPABASE_URL.startsWith('https://'))
+    ? SUPABASE_URL  : lsUrl;
+  const resolvedAnon = (SUPABASE_ANON && SUPABASE_ANON.length > 20)
+    ? SUPABASE_ANON : lsAnon;
+
+  const hasCredentials = resolvedUrl.startsWith('https://') && resolvedAnon.length > 20;
+
+  // ── Step 2: Auto-connect if credentials are available ─────────────────
+  if (hasCredentials) {
+    SB_MODE = initSupabase(resolvedUrl, resolvedAnon);
+  }
+
+  // ── Step 3: If connected, try to restore existing session or go to login
+  if (SB_MODE) {
+    try {
+      // Verify connection is live
+      const { error: pingErr } = await sb.from('usuarios').select('id').limit(1);
+      if (pingErr) throw new Error(pingErr.message);
+
+      // Try to restore existing auth session (user was previously logged in)
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        const { data: users } = await sb
+          .from('usuarios').select('*').eq('ativo', true).limit(50);
+        const matched = users?.find(u => `${u.login}@lopes.sistema` === session.user.email);
+        if (matched) {
+          currentUser = {
+            id: matched.id, login: matched.login,
+            nome: matched.nome, perfil: matched.perfil, ativo: matched.ativo,
+            empresas_permitidas: matched.empresas_permitidas || [],
+          };
+          await syncAllFromSupabase();
+          const p = currentUser.perfil;
+          if (p === 'admin' || p === 'gestor') { currentEmp = null; enterSystem(); }
+          else showSelectEmp();
+          return; // already logged in — skip login screen
+        }
+      }
+
+      // Connected but no active session → show login
+      showLoginScreen();
+
+    } catch(e) {
+      console.error('[Supabase] Connection failed:', e.message);
+      SB_MODE = false;
+      sb = null;
+      // Credentials exist but connection failed → still show login (demo mode)
+      showLoginScreen();
+    }
+
+  } else if (hasCredentials && !SB_MODE) {
+    // Had credentials but initSupabase failed → demo mode
+    console.warn('[Supabase] initSupabase failed despite having credentials');
+    showLoginScreen();
+
+  } else {
+    // No credentials at all → show setup screen
+    showSetupScreen();
+  }
+});
+
+</script>
+</body>
+</html>
